@@ -1,0 +1,18 @@
+{
+  // Suppress CSS linting warnings for third-party library files
+  "css.lint.validProperties": [
+    "text-size-adjust",
+    "-webkit-text-size-adjust",
+    "appearance",
+    "-webkit-appearance"
+  ],
+  "css.lint.vendorPrefix": "ignore",
+  "css.lint.propertyIgnoredDueToDisplay": "ignore",
+  "css.lint.unknownProperties": "ignore",
+  "css.lint.compatibleVendorPrefixes": "ignore",
+  
+  // Exclude lib folders from file watching
+  "files.watcherExclude": {
+    "**/wwwroot/lib/**": true
+  }
+}
