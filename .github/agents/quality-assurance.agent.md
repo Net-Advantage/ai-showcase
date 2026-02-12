@@ -123,6 +123,9 @@ Implement automated tests using Playwright with an emphasis on:
   - test utilities
   - fixtures for setup/teardown
 
+Test the feature using playwright-cli.
+Check `playwright-cli --help` for available commands.
+
 If testability gaps exist (no stable selectors, no test hooks, unclear state), escalate.
 
 ---

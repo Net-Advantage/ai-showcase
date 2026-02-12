@@ -1,0 +1,171 @@
+@page "/calculator"
+@rendermode InteractiveServer
+@using System.ComponentModel.DataAnnotations
+@using NzPayeCalc.Web.Models
+@using NzPayeCalc.Web.Services
+@inject PayeApiClient ApiClient
+@inject ILogger<Calculator> Logger
+
+<PageTitle>NZ PAYE Calculator</PageTitle>
+
+<div class="calculator-container">
+    <section class="calculator-header">
+        <h1>NZ PAYE Calculator</h1>
+        <p>Calculate your monthly take-home pay based on your annual salary</p>
+    </section>
+
+    <section class="calculator-input">
+        <EditForm Model="@salaryInput" OnValidSubmit="@HandleCalculate" FormName="PayeCalculatorForm">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label for="annual-salary" class="form-label">
+                    Annual Salary (NZD)
+                </label>
+                <div class="input-wrapper">
+                    <span class="currency-symbol">$</span>
+                    <InputNumber 
+                        id="annual-salary" 
+                        @bind-Value="salaryInput.AnnualSalary" 
+                        class="form-control salary-input"
+                        placeholder="60,000"
+                        aria-describedby="salary-help" />
+                </div>
+                <ValidationMessage For="@(() => salaryInput.AnnualSalary)" class="validation-message" />
+                <small id="salary-help" class="form-text">
+                    Enter your gross annual salary before tax
+                </small>
+            </div>
+
+            <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span>Calculating...</span>
+                }
+                else
+                {
+                    <span>Calculate</span>
+                }
+            </button>
+        </EditForm>
+    </section>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show mt-4" role="alert">
+            <strong>Error:</strong> @errorMessage
+            <button type="button" class="btn-close" @onclick="ClearError" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (results != null && !isLoading)
+    {
+        <section class="calculator-results mt-4">
+            <div class="results-card">
+                <h2>Monthly Breakdown</h2>
+                
+                <dl class="results-list">
+                    <div class="result-row">
+                        <dt>Monthly Gross Salary</dt>
+                        <dd>@results.Monthly.GrossSalary.ToString("C2")</dd>
+                    </div>
+                    <div class="result-row deduction">
+                        <dt>PAYE Tax</dt>
+                        <dd>-@results.Monthly.PayeTax.ToString("C2")</dd>
+                    </div>
+                    <div class="result-row deduction">
+                        <dt>KiwiSaver (3%)</dt>
+                        <dd>-@results.Monthly.KiwiSaver.ToString("C2")</dd>
+                    </div>
+                    <div class="result-row deduction">
+                        <dt>ACC Levy (1.53%)</dt>
+                        <dd>-@results.Monthly.AccLevy.ToString("C2")</dd>
+                    </div>
+                    <div class="result-row take-home">
+                        <dt>Take-Home Pay</dt>
+                        <dd>@results.Monthly.TakeHomePay.ToString("C2")</dd>
+                    </div>
+                </dl>
+
+                <details class="annual-breakdown mt-3">
+                    <summary>View Annual Breakdown</summary>
+                    <dl class="results-list mt-2">
+                        <div class="result-row">
+                            <dt>Annual Gross Salary</dt>
+                            <dd>@results.Annual.GrossSalary.ToString("C2")</dd>
+                        </div>
+                        <div class="result-row deduction">
+                            <dt>PAYE Tax</dt>
+                            <dd>-@results.Annual.PayeTax.ToString("C2")</dd>
+                        </div>
+                        <div class="result-row deduction">
+                            <dt>KiwiSaver (3%)</dt>
+                            <dd>-@results.Annual.KiwiSaver.ToString("C2")</dd>
+                        </div>
+                        <div class="result-row deduction">
+                            <dt>ACC Levy (1.53%)</dt>
+                            <dd>-@results.Annual.AccLevy.ToString("C2")</dd>
+                        </div>
+                        <div class="result-row take-home">
+                            <dt>Take-Home Pay</dt>
+                            <dd>@results.Annual.TakeHomePay.ToString("C2")</dd>
+                        </div>
+                    </dl>
+                </details>
+            </div>
+
+            <div class="calculation-notes mt-3">
+                <p class="text-muted small">
+                    <strong>Note:</strong> This calculation uses 2024/2025 NZ tax rates. 
+                    This is an estimate and does not include other deductions such as student loans or additional voluntary contributions.
+                </p>
+            </div>
+        </section>
+    }
+</div>
+
+@code {
+    private SalaryInputModel salaryInput = new();
+    private PayeCalculationResponse? results;
+    private bool isLoading;
+    private string? errorMessage;
+
+    private class SalaryInputModel
+    {
+        [Required(ErrorMessage = "Annual salary is required")]
+        [Range(1, 1000000, ErrorMessage = "Salary must be between $1 and $1,000,000")]
+        public decimal AnnualSalary { get; set; } = 60000; // Default example value
+    }
+
+    private async Task HandleCalculate()
+    {
+        isLoading = true;
+        errorMessage = null;
+        results = null;
+
+        try
+        {
+            results = await ApiClient.CalculateAsync(salaryInput.AnnualSalary);
+        }
+        catch (ApplicationException ex)
+        {
+            errorMessage = ex.Message;
+            Logger.LogWarning(ex, "Calculation failed for salary {Salary}", salaryInput.AnnualSalary);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An unexpected error occurred. Please try again.";
+            Logger.LogError(ex, "Unexpected error during calculation");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ClearError()
+    {
+        errorMessage = null;
+    }
+}

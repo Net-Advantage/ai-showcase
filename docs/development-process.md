@@ -189,6 +189,11 @@ Each specialist receives:
 
 3. **Consistency Gate**
    - No unresolved conflicts between UX, architecture, and implementation plans
+   - Documentation consistency verified:
+     - No redundant specifications between `/specs` and `/docs`
+     - Design decisions documented in only one authoritative location
+     - Implementation guidance in `/docs` references `/specs` (never duplicates)
+     - Conflicts flagged and resolved
 
 4. **Spec Gaps Gate**
    - All spec gaps documented
@@ -284,7 +289,11 @@ graph TD
     ConsistGate -->|No| ResolveConflict[Resolve Conflicts]
     ResolveConflict --> IntegrationGates
     
-    ConsistGate -->|Yes| SpecGapGate{Spec Gaps<br/>Documented?}
+    ConsistGate -->|Yes| DocConsistGate{Documentation<br/>Consistency<br/>Gate Pass?}
+    DocConsistGate -->|No| FixDocConflict[Resolve Redundancy/<br/>Conflicts in Docs]
+    FixDocConflict --> IntegrationGates
+    
+    DocConsistGate -->|Yes| SpecGapGate{Spec Gaps<br/>Documented?}
     SpecGapGate -->|No| DocGaps[Document Gaps]
     DocGaps --> IntegrationGates
     

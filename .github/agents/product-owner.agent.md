@@ -108,6 +108,11 @@ You do not accept work until all gates pass:
   - docs (Implementation Engineer), where applicable
 - Acceptance criteria are covered by tests or explicit verification steps
 - No unresolved conflicts between UX, architecture, and implementation plans
+- Documentation consistency:
+  - No redundant specifications between `/specs` and `/docs`
+  - Design decisions documented in only one authoritative location
+  - If `/docs` contains implementation guidance, it references `/specs` (never duplicates)
+  - Any conflicts flagged and resolved before acceptance
 - Any spec gaps are documented and routed to a `/specs` update
 
 ### Step 6: Final checklist
