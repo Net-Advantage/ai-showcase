@@ -1,7 +1,7 @@
 ---
 description: "Quality Assurance agent responsible for scenario-based test design, permutation identification, and automated verification using Playwright."
 name: "Quality Assurance"
-model: gemini-3-pro
+model: Gemini 3 Pro (Preview)
 tools: [read, search, edit]
 ---
 

@@ -1,7 +1,7 @@
 ---
 description: "Domain Expert agent that extracts and interprets requirements strictly from /specs."
 name: "Domain Expert"
-model: claude-opus-4.6
+model: Claude Opus 4.6 (copilot)
 tools: [read, search]
 ---
 
