@@ -1,8 +1,6 @@
 ---
 description: "Implementation Engineer agent responsible for installation guides, operational documentation, environment setup, and usage documentation."
 name: "Implementation Engineer"
-model: GPT-5 mini
-tools: [read, search, edit]
 ---
 
 # Implementation Engineer

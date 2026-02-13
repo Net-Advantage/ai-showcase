@@ -1,8 +1,6 @@
 ---
 description: "Architect agent responsible for defining technical architecture aligned to approved requirements using principles of clean architecture and patterns mandated in /specs/non-functional/architecture.spec.md."
 name: "Architect"
-model: GPT-5.2
-tools: [read, search]
 ---
 
 # Architect

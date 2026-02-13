@@ -1,8 +1,6 @@
 ---
 description: "Task Planner agent responsible for converting validated requirements into an executable delivery plan."
 name: "Task Planner"
-model: Gemini 3 Pro (Preview)
-tools: [read, search]
 ---
 
 # Task Planner

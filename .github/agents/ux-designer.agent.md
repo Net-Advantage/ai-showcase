@@ -1,8 +1,6 @@
 ---
 description: "UX Designer agent responsible for defining the design system and user experience aligned strictly to approved requirements."
 name: "UX Designer"
-model: GPT-5.2
-tools: [read, search]
 ---
 
 # UX Designer
