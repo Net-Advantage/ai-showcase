@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Property Portfolio</title>
+    <!-- REQ-001: Reuse shared design system -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="rental-styles.css">
+</head>
+<body>
+    <main class="rental-container">
+        <!-- REQ-001: Back to main -->
+        <a href="../../index.html" class="back-link">Back to Dashboard</a>
+
+        <!-- REQ-001, REQ-008: Page header with tax year badge -->
+        <header class="page-header">
+            <h1>Rental Property Portfolio</h1>
+            <div class="page-header-actions">
+                <span class="tax-year-badge" id="tax-year-badge" aria-label="Tax year"></span>
+                <!-- REQ-001: Add property -->
+                <a href="rental-property-edit.html" class="btn-primary--compact" role="button">
+                    + Add Property
+                </a>
+            </div>
+        </header>
+
+        <!-- REQ-008: Portfolio Totals Panel -->
+        <section class="card" aria-label="Portfolio totals" id="totals-section">
+            <div class="totals-panel" id="totals-panel">
+                <div class="totals-panel__item">
+                    <span class="totals-panel__label">Total Income</span>
+                    <span class="totals-panel__value totals-panel__value--positive" id="total-income">$0.00</span>
+                </div>
+                <div class="totals-panel__item">
+                    <span class="totals-panel__label">Total Expenses</span>
+                    <span class="totals-panel__value totals-panel__value--negative" id="total-expenses">$0.00</span>
+                </div>
+                <div class="totals-panel__item">
+                    <span class="totals-panel__label">Net Position</span>
+                    <span class="totals-panel__value" id="total-net">$0.00</span>
+                </div>
+                <div class="totals-panel__item">
+                    <span class="totals-panel__label">Loss Carry Forward</span>
+                    <span class="totals-panel__value totals-panel__value--warning" id="total-loss">$0.00</span>
+                </div>
+                <div class="totals-panel__item">
+                    <span class="totals-panel__label">Completed</span>
+                    <span class="totals-panel__value" id="total-completed">0</span>
+                </div>
+                <div class="totals-panel__item">
+                    <span class="totals-panel__label">Warnings</span>
+                    <span class="totals-panel__value totals-panel__value--warning" id="total-warnings">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- REQ-001: Property list -->
+        <section aria-label="Property list" id="property-list-section">
+            <div class="property-list" id="property-list">
+                <!-- Rendered by JS -->
+            </div>
+
+            <!-- Empty state -->
+            <div class="card no-data" id="empty-state" hidden>
+                <div class="no-data__icon" aria-hidden="true">🏠</div>
+                <p class="no-data__text">No rental properties yet. Add your first property to get started.</p>
+                <a href="rental-property-edit.html" class="btn-primary--compact" role="button">+ Add Property</a>
+            </div>
+        </section>
+    </main>
+
+    <script src="rental-app.js"></script>
+    <script>
+        /* ================================================
+           Portfolio List Page — Controller
+           REQ-001, REQ-008
+           ================================================ */
+
+        'use strict';
+
+        function renderPortfolio() {
+            var settings = loadSettings();
+            var properties = loadProperties();
+            var listEl = document.getElementById('property-list');
+            var emptyEl = document.getElementById('empty-state');
+            var badgeEl = document.getElementById('tax-year-badge');
+
+            // REQ-008: Tax year badge
+            badgeEl.textContent = 'Tax Year: ' + settings.taxYear;
+
+            // Empty state
+            if (properties.length === 0) {
+                listEl.innerHTML = '';
+                emptyEl.hidden = false;
+                return;
+            }
+            emptyEl.hidden = true;
+
+            // REQ-001: Render property cards
+            var html = '';
+            properties.forEach(function (prop) {
+                var summary = getPropertySummary(prop.propertyId);
+                var net = summary.netRentalIncome || 0;
+                var netClass = net >= 0 ? 'currency-positive' : 'currency-negative';
+                var statusLabel = summary.status.replace(/([A-Z])/g, ' $1').trim();
+
+                // Build diagnostic badges
+                var badgesHtml = '<span class="status-badge status-badge--' + summary.status + '">' + statusLabel + '</span>';
+
+                if (summary.hasBlocking) {
+                    badgesHtml += ' <span class="diag-badge diag-badge--blocking">Blocking</span>';
+                } else if (summary.hasWarning) {
+                    badgesHtml += ' <span class="diag-badge diag-badge--warning">Warning</span>';
+                }
+
+                html += '<a href="rental-workpaper.html?id=' + prop.propertyId + '" ' +
+                    'class="property-card" ' +
+                    'aria-label="' + prop.displayName + '">' +
+                    '<div class="property-card__info">' +
+                        '<span class="property-card__name">' + escapeHtml(prop.displayName) + '</span>' +
+                        '<span class="property-card__address">' + escapeHtml(prop.addressLine1 + ', ' + prop.city) + '</span>' +
+                        '<div class="property-card__meta">' +
+                            '<span>' + escapeHtml(formatCategory(prop.propertyType)) + '</span>' +
+                            '<span>' + Math.round(prop.ownershipPercentage * 100) + '% owned</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="property-card__right">' +
+                        '<span class="property-card__net ' + netClass + '">' + formatCurrency(net) + '</span>' +
+                        '<div class="property-card__badges">' + badgesHtml + '</div>' +
+                    '</div>' +
+                '</a>';
+            });
+            listEl.innerHTML = html;
+
+            // REQ-008: Portfolio totals
+            renderTotals();
+        }
+
+        // REQ-008: Render totals panel
+        function renderTotals() {
+            var totals = calculatePortfolioTotals();
+
+            document.getElementById('total-income').textContent = formatCurrency(totals.totalIncome);
+            document.getElementById('total-expenses').textContent = formatCurrency(totals.totalExpenses);
+
+            var netEl = document.getElementById('total-net');
+            netEl.textContent = formatCurrency(totals.netPosition);
+            netEl.className = 'totals-panel__value ' +
+                (totals.netPosition >= 0 ? 'totals-panel__value--positive' : 'totals-panel__value--negative');
+
+            document.getElementById('total-loss').textContent = formatCurrency(totals.lossCarryForward);
+            document.getElementById('total-completed').textContent = totals.completedCount + ' / ' + totals.propertyCount;
+            document.getElementById('total-warnings').textContent = String(totals.warningCount);
+        }
+
+        // Utility: escape HTML
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str || ''));
+            return div.innerHTML;
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', renderPortfolio);
+    </script>
+</body>
+</html>

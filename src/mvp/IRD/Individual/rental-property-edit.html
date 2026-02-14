@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add / Edit Rental Property</title>
+    <!-- REQ-001: Reuse shared design system -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="rental-styles.css">
+</head>
+<body>
+    <main class="rental-container">
+        <!-- REQ-001: Back to portfolio -->
+        <a href="rental-property.html" class="back-link">Back to Portfolio</a>
+
+        <header class="page-header">
+            <h1 id="page-title">Add Rental Property</h1>
+        </header>
+
+        <!-- REQ-001: Property form -->
+        <section class="card">
+            <form id="property-form" class="property-form" novalidate>
+                <!-- Display Name -->
+                <div class="form-group">
+                    <label for="displayName">Display Name <span aria-hidden="true">*</span></label>
+                    <span class="help-text">A friendly name for this property</span>
+                    <input type="text" id="displayName" required aria-required="true"
+                           placeholder="e.g. Beach House">
+                    <div class="error-message" id="displayName-error" role="alert" hidden></div>
+                </div>
+
+                <!-- Address -->
+                <div class="form-group">
+                    <label for="addressLine1">Address <span aria-hidden="true">*</span></label>
+                    <input type="text" id="addressLine1" required aria-required="true"
+                           placeholder="e.g. 42 Ocean Drive">
+                    <div class="error-message" id="addressLine1-error" role="alert" hidden></div>
+                </div>
+
+                <!-- City -->
+                <div class="form-group">
+                    <label for="city">City <span aria-hidden="true">*</span></label>
+                    <input type="text" id="city" required aria-required="true"
+                           placeholder="e.g. Auckland">
+                    <div class="error-message" id="city-error" role="alert" hidden></div>
+                </div>
+
+                <div class="form-row">
+                    <!-- Property Type -->
+                    <div class="form-group">
+                        <label for="propertyType">Property Type <span aria-hidden="true">*</span></label>
+                        <select id="propertyType" required aria-required="true">
+                            <option value="House">House</option>
+                            <option value="Apartment">Apartment</option>
+                            <option value="Townhouse">Townhouse</option>
+                            <option value="Unit">Unit</option>
+                            <option value="Commercial">Commercial</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Ownership Percentage -->
+                    <div class="form-group">
+                        <label for="ownershipPercentage">Ownership % <span aria-hidden="true">*</span></label>
+                        <span class="help-text">0–100%</span>
+                        <input type="number" id="ownershipPercentage" required aria-required="true"
+                               min="0" max="100" step="0.01" value="100"
+                               placeholder="100">
+                        <div class="error-message" id="ownershipPercentage-error" role="alert" hidden></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <!-- Acquisition Date -->
+                    <div class="form-group">
+                        <label for="acquisitionDate">Acquisition Date</label>
+                        <input type="date" id="acquisitionDate">
+                    </div>
+
+                    <!-- Disposal Date -->
+                    <div class="form-group">
+                        <label for="disposalDate">Disposal Date</label>
+                        <input type="date" id="disposalDate">
+                    </div>
+                </div>
+
+                <!-- Boolean flags -->
+                <div class="form-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="isMainHome">
+                        <label for="isMainHome" class="checkbox-label-text">
+                            This is my main home
+                            <span class="help-text">Select if you also live in this property</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="isNewBuild">
+                        <label for="isNewBuild" class="checkbox-label-text">
+                            New build
+                            <span class="help-text">Select if the property was a new build at acquisition</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="isActive" checked>
+                        <label for="isActive" class="checkbox-label-text">
+                            Active property
+                            <span class="help-text">Inactive properties are excluded from portfolio totals</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- REQ-001: Form actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Save Property</button>
+                    <a href="rental-property.html" class="btn-secondary" role="button">Cancel</a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script src="rental-app.js"></script>
+    <script>
+        /* ================================================
+           Property Edit Page — Controller
+           REQ-001
+           ================================================ */
+
+        'use strict';
+
+        var editingId = getQueryParam('id');
+
+        function initForm() {
+            if (editingId) {
+                // Pre-populate for editing
+                var prop = getPropertyById(editingId);
+                if (!prop) {
+                    window.location.href = 'rental-property.html';
+                    return;
+                }
+                document.getElementById('page-title').textContent = 'Edit Rental Property';
+                document.getElementById('displayName').value = prop.displayName || '';
+                document.getElementById('addressLine1').value = prop.addressLine1 || '';
+                document.getElementById('city').value = prop.city || '';
+                document.getElementById('propertyType').value = prop.propertyType || 'House';
+                document.getElementById('ownershipPercentage').value =
+                    Math.round(prop.ownershipPercentage * 100);
+                document.getElementById('acquisitionDate').value = prop.acquisitionDate || '';
+                document.getElementById('disposalDate').value = prop.disposalDate || '';
+                document.getElementById('isMainHome').checked = !!prop.isMainHome;
+                document.getElementById('isNewBuild').checked = !!prop.isNewBuild;
+                document.getElementById('isActive').checked = prop.isActive !== false;
+            }
+        }
+
+        function validateForm() {
+            var valid = true;
+            var fields = ['displayName', 'addressLine1', 'city'];
+            fields.forEach(function (f) {
+                var el = document.getElementById(f);
+                var errEl = document.getElementById(f + '-error');
+                if (!el.value.trim()) {
+                    el.classList.add('has-error');
+                    errEl.textContent = 'This field is required.';
+                    errEl.hidden = false;
+                    valid = false;
+                } else {
+                    el.classList.remove('has-error');
+                    errEl.hidden = true;
+                }
+            });
+
+            var pctEl = document.getElementById('ownershipPercentage');
+            var pctErr = document.getElementById('ownershipPercentage-error');
+            var pctVal = parseFloat(pctEl.value);
+            if (isNaN(pctVal) || pctVal < 0 || pctVal > 100) {
+                pctEl.classList.add('has-error');
+                pctErr.textContent = 'Enter a value between 0 and 100.';
+                pctErr.hidden = false;
+                valid = false;
+            } else {
+                pctEl.classList.remove('has-error');
+                pctErr.hidden = true;
+            }
+
+            return valid;
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            if (!validateForm()) return;
+
+            var data = {
+                displayName: document.getElementById('displayName').value.trim(),
+                addressLine1: document.getElementById('addressLine1').value.trim(),
+                city: document.getElementById('city').value.trim(),
+                propertyType: document.getElementById('propertyType').value,
+                ownershipPercentage: parseFloat(document.getElementById('ownershipPercentage').value) / 100,
+                acquisitionDate: document.getElementById('acquisitionDate').value || null,
+                disposalDate: document.getElementById('disposalDate').value || null,
+                isMainHome: document.getElementById('isMainHome').checked,
+                isNewBuild: document.getElementById('isNewBuild').checked,
+                isActive: document.getElementById('isActive').checked
+            };
+
+            if (editingId) {
+                updateProperty(editingId, data);
+                logActivity(
+                    (getWorkpaperByPropertyId(editingId) || {}).workpaperId || '',
+                    'UpdatedProperty', 'property', null, data.displayName
+                );
+            } else {
+                createProperty(data);
+            }
+
+            window.location.href = 'rental-property.html';
+        }
+
+        // Bind events
+        document.getElementById('property-form').addEventListener('submit', handleSubmit);
+
+        // Clear errors on input
+        document.querySelectorAll('#property-form input, #property-form select').forEach(function (el) {
+            el.addEventListener('input', function () {
+                el.classList.remove('has-error');
+                var errEl = document.getElementById(el.id + '-error');
+                if (errEl) errEl.hidden = true;
+            });
+        });
+
+        // Init
+        document.addEventListener('DOMContentLoaded', initForm);
+    </script>
+</body>
+</html>

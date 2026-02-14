@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Workpaper</title>
+    <!-- REQ-002: Reuse shared design system -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="rental-styles.css">
+</head>
+<body>
+    <main class="rental-container">
+        <!-- REQ-002: Back to portfolio -->
+        <a href="rental-property.html" class="back-link">Back to Portfolio</a>
+
+        <!-- Header -->
+        <header class="page-header">
+            <h1 id="workpaper-title">Rental Workpaper</h1>
+            <div class="page-header-actions">
+                <span class="tax-year-badge" id="tax-year-badge"></span>
+                <span class="status-badge" id="header-status-badge"></span>
+            </div>
+        </header>
+
+        <!-- REQ-012: Diagnostics banner -->
+        <div id="diagnostics-banner" class="card diagnostics-list" hidden aria-live="polite"></div>
+
+        <!-- REQ-002: Tab navigation -->
+        <nav class="tab-nav" role="tablist" aria-label="Workpaper sections">
+            <button role="tab" id="tab-income" aria-selected="true" aria-controls="panel-income"
+                    data-tab="income">Income &amp; Days</button>
+            <button role="tab" id="tab-expenses" aria-selected="false" aria-controls="panel-expenses"
+                    data-tab="expenses">Expenses</button>
+            <button role="tab" id="tab-results" aria-selected="false" aria-controls="panel-results"
+                    data-tab="results">Results</button>
+            <button role="tab" id="tab-evidence" aria-selected="false" aria-controls="panel-evidence"
+                    data-tab="evidence">Evidence</button>
+            <button role="tab" id="tab-activity" aria-selected="false" aria-controls="panel-activity"
+                    data-tab="activity">Activity</button>
+        </nav>
+
+        <!-- ============================================
+             TAB PANELS
+             ============================================ -->
+
+        <!-- REQ-003, REQ-007: Income & Days -->
+        <section role="tabpanel" id="panel-income" class="tab-panel active" aria-labelledby="tab-income">
+            <div class="card">
+                <h2 class="tab-section__title">Income &amp; Days</h2>
+
+                <div class="form-group">
+                    <label for="grossRentalIncome">Gross Rental Income ($) <span aria-hidden="true">*</span></label>
+                    <span class="help-text">Total rent received before expenses</span>
+                    <div class="input-wrapper">
+                        <span class="input-prefix" aria-hidden="true">$</span>
+                        <input type="text" id="grossRentalIncome" class="salary-input"
+                               inputmode="decimal" placeholder="0.00"
+                               aria-describedby="grossRentalIncome-help">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="daysRented">Days Rented <span aria-hidden="true">*</span></label>
+                        <span class="help-text">Number of days the property was rented</span>
+                        <input type="number" id="daysRented" min="0" max="365" step="1" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="daysAvailable">Days Available</label>
+                        <span class="help-text">Number of days available for rent</span>
+                        <input type="number" id="daysAvailable" min="0" max="365" step="1" placeholder="0">
+                    </div>
+                </div>
+
+                <!-- REQ-003: Mixed use toggle -->
+                <div class="form-group">
+                    <div class="toggle-wrapper">
+                        <label class="toggle-switch" aria-label="Mixed use property">
+                            <input type="checkbox" id="mixedUse">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label" id="mixedUse-label">Mixed Use (personal &amp; rental)</span>
+                    </div>
+                </div>
+
+                <div class="form-group" id="daysPrivate-group" hidden>
+                    <label for="daysPrivate">Days Private Use <span aria-hidden="true">*</span></label>
+                    <span class="help-text">Number of days the property was used privately</span>
+                    <input type="number" id="daysPrivate" min="0" max="365" step="1" placeholder="0">
+                </div>
+            </div>
+        </section>
+
+        <!-- REQ-002: Expenses -->
+        <section role="tabpanel" id="panel-expenses" class="tab-panel" aria-labelledby="tab-expenses">
+            <div class="card">
+                <h2 class="tab-section__title">Expense Lines</h2>
+
+                <!-- Add expense inline form -->
+                <div class="expense-form" id="expense-add-form">
+                    <div class="form-group">
+                        <label for="exp-category">Category</label>
+                        <select id="exp-category">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exp-description">Description</label>
+                        <input type="text" id="exp-description" placeholder="Description">
+                    </div>
+                    <div class="form-group">
+                        <label for="exp-amount">Amount ($)</label>
+                        <input type="number" id="exp-amount" min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="exp-capital" class="sr-only">Capital</label>
+                        <div class="checkbox-wrapper" style="padding-top:1.25rem;">
+                            <input type="checkbox" id="exp-capital">
+                            <label for="exp-capital" class="checkbox-label-text" style="font-size:var(--font-size-xs);">Capital</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exp-apportionable" class="sr-only">Apportion</label>
+                        <div class="checkbox-wrapper" style="padding-top:1.25rem;">
+                            <input type="checkbox" id="exp-apportionable" checked>
+                            <label for="exp-apportionable" class="checkbox-label-text" style="font-size:var(--font-size-xs);">Apportion</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only">Add</label>
+                        <button type="button" id="btn-add-expense" class="btn-primary--compact btn-small"
+                                style="margin-top:1rem;">Add</button>
+                    </div>
+                </div>
+
+                <!-- Expense table -->
+                <div class="expense-table-wrapper">
+                    <table class="expense-table" id="expense-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Category</th>
+                                <th scope="col">Description</th>
+                                <th scope="col" class="amount-cell">Amount</th>
+                                <th scope="col" class="checkbox-cell">Capital</th>
+                                <th scope="col" class="checkbox-cell">Apportion</th>
+                                <th scope="col" class="actions-cell">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expense-tbody">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                        <tfoot id="expense-tfoot">
+                            <tr class="expense-total-row">
+                                <td colspan="2"><strong>Total</strong></td>
+                                <td class="amount-cell" id="expense-total">$0.00</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="empty-state" id="expenses-empty" hidden>
+                    No expense lines added yet.
+                </div>
+            </div>
+        </section>
+
+        <!-- REQ-007: Results -->
+        <section role="tabpanel" id="panel-results" class="tab-panel" aria-labelledby="tab-results">
+            <div class="card">
+                <h2 class="tab-section__title">Calculation Results</h2>
+
+                <!-- REQ-007: Result breakdown -->
+                <div class="results-grid" id="results-grid">
+                    <div class="result-block">
+                        <div class="result-block__title">Adjusted Income</div>
+                        <div class="result-block__value result-block__value--positive" id="res-adjustedIncome">$0.00</div>
+                    </div>
+                    <div class="result-block">
+                        <div class="result-block__title">Adjusted Expenses</div>
+                        <div class="result-block__value result-block__value--negative" id="res-adjustedExpenses">$0.00</div>
+                    </div>
+                    <div class="result-block">
+                        <div class="result-block__title">Net Rental Income</div>
+                        <div class="result-block__value" id="res-netRentalIncome">$0.00</div>
+                    </div>
+                    <div class="result-block">
+                        <div class="result-block__title">Loss Carry Forward</div>
+                        <div class="result-block__value totals-panel__value--warning" id="res-lossCarryForward">$0.00</div>
+                    </div>
+                </div>
+
+                <!-- Detailed breakdown -->
+                <details class="tab-section">
+                    <summary>View Detailed Breakdown</summary>
+                    <div class="breakdown" id="detail-breakdown">
+                        <dl>
+                            <div class="row">
+                                <dt>Total Expenses</dt>
+                                <dd class="currency-value" id="res-totalExpenses">$0.00</dd>
+                            </div>
+                            <div class="row">
+                                <dt>Capital Excluded</dt>
+                                <dd class="currency-value deduction" id="res-capitalExcluded">$0.00</dd>
+                            </div>
+                            <div class="row">
+                                <dt>Deductible Expense Base</dt>
+                                <dd class="currency-value" id="res-deductibleBase">$0.00</dd>
+                            </div>
+                            <div class="row">
+                                <dt>Ownership-Adjusted Expenses</dt>
+                                <dd class="currency-value" id="res-ownedExpenses">$0.00</dd>
+                            </div>
+                            <div class="row">
+                                <dt>Apportioned Expenses</dt>
+                                <dd class="currency-value" id="res-apportionedExpenses">$0.00</dd>
+                            </div>
+                            <div class="row">
+                                <dt>Interest Total</dt>
+                                <dd class="currency-value" id="res-interestTotal">$0.00</dd>
+                            </div>
+                            <div class="row">
+                                <dt>Deductible Interest (80%)</dt>
+                                <dd class="currency-value" id="res-deductibleInterest">$0.00</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </details>
+
+                <!-- REQ-011: Status lifecycle buttons -->
+                <div class="status-actions" id="status-actions">
+                    <span class="status-actions__current">
+                        Current Status: <span class="status-badge" id="results-status-badge"></span>
+                    </span>
+                    <div class="btn-group" id="status-buttons">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REQ-009: Evidence -->
+        <section role="tabpanel" id="panel-evidence" class="tab-panel" aria-labelledby="tab-evidence">
+            <div class="card">
+                <h2 class="tab-section__title">Evidence</h2>
+
+                <!-- Add evidence stub form -->
+                <div class="evidence-form" id="evidence-add-form">
+                    <div class="form-group">
+                        <label for="ev-fileName">File Name</label>
+                        <input type="text" id="ev-fileName" placeholder="receipt.pdf">
+                    </div>
+                    <div class="form-group">
+                        <label for="ev-contentType">Content Type</label>
+                        <input type="text" id="ev-contentType" placeholder="application/pdf">
+                    </div>
+                    <div class="form-group">
+                        <label for="ev-sizeBytes">Size (bytes)</label>
+                        <input type="number" id="ev-sizeBytes" min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only">Add</label>
+                        <button type="button" id="btn-add-evidence" class="btn-primary--compact btn-small"
+                                style="margin-top:1rem;">Add Evidence</button>
+                    </div>
+                </div>
+
+                <!-- Evidence list -->
+                <div class="evidence-list" id="evidence-list">
+                    <!-- Rendered by JS -->
+                </div>
+
+                <div class="empty-state" id="evidence-empty" hidden>
+                    No evidence attached yet.
+                </div>
+            </div>
+        </section>
+
+        <!-- REQ-006: Activity -->
+        <section role="tabpanel" id="panel-activity" class="tab-panel" aria-labelledby="tab-activity">
+            <div class="card">
+                <h2 class="tab-section__title">Activity Log</h2>
+                <div class="activity-log" id="activity-log">
+                    <!-- Rendered by JS -->
+                </div>
+                <div class="empty-state" id="activity-empty" hidden>
+                    No activity recorded yet.
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="rental-app.js"></script>
+    <script>
+        /* ================================================
+           Workpaper Detail Page — Controller
+           REQ-002, REQ-003, REQ-006, REQ-007,
+           REQ-009, REQ-011, REQ-012
+           ================================================ */
+
+        'use strict';
+
+        var propertyId = getQueryParam('id');
+        var workpaper = null;
+        var property = null;
+
+        /* ------------------------------------------------
+           Initialization
+           ------------------------------------------------ */
+        function init() {
+            if (!propertyId) {
+                window.location.href = 'rental-property.html';
+                return;
+            }
+            property = getPropertyById(propertyId);
+            if (!property) {
+                window.location.href = 'rental-property.html';
+                return;
+            }
+            workpaper = getWorkpaperByPropertyId(propertyId);
+            if (!workpaper) {
+                workpaper = createWorkpaper(propertyId);
+            }
+
+            // Set header
+            document.getElementById('workpaper-title').textContent = property.displayName;
+            document.getElementById('tax-year-badge').textContent = 'Tax Year: ' + loadSettings().taxYear;
+
+            // Populate expense category dropdown
+            populateCategoryDropdown();
+
+            // Bind events
+            bindTabNavigation();
+            bindIncomeInputs();
+            bindExpenseForm();
+            bindEvidenceForm();
+
+            // Initial render
+            renderAll();
+        }
+
+        /* ------------------------------------------------
+           Tab Navigation
+           ------------------------------------------------ */
+        function bindTabNavigation() {
+            var tabs = document.querySelectorAll('.tab-nav [role="tab"]');
+            tabs.forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    activateTab(tab.getAttribute('data-tab'));
+                });
+                tab.addEventListener('keydown', function (e) {
+                    var tabsArr = Array.from(tabs);
+                    var idx = tabsArr.indexOf(tab);
+                    if (e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        var next = tabsArr[(idx + 1) % tabsArr.length];
+                        next.focus();
+                        activateTab(next.getAttribute('data-tab'));
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        var prev = tabsArr[(idx - 1 + tabsArr.length) % tabsArr.length];
+                        prev.focus();
+                        activateTab(prev.getAttribute('data-tab'));
+                    }
+                });
+            });
+        }
+
+        function activateTab(tabName) {
+            document.querySelectorAll('.tab-nav [role="tab"]').forEach(function (t) {
+                t.setAttribute('aria-selected', t.getAttribute('data-tab') === tabName ? 'true' : 'false');
+            });
+            document.querySelectorAll('.tab-panel').forEach(function (p) {
+                p.classList.toggle('active', p.id === 'panel-' + tabName);
+            });
+        }
+
+        /* ------------------------------------------------
+           Income & Days Inputs (REQ-003, REQ-007)
+           ------------------------------------------------ */
+        function bindIncomeInputs() {
+            var fields = ['grossRentalIncome', 'daysRented', 'daysAvailable', 'daysPrivate'];
+            fields.forEach(function (f) {
+                var el = document.getElementById(f);
+                if (el) {
+                    el.addEventListener('input', debounce(function () {
+                        saveIncomeFields();
+                        recalculate();
+                    }, 300));
+                }
+            });
+
+            // REQ-003: Mixed use toggle
+            document.getElementById('mixedUse').addEventListener('change', function () {
+                var isChecked = this.checked;
+                document.getElementById('daysPrivate-group').hidden = !isChecked;
+                saveIncomeFields();
+                recalculate();
+            });
+        }
+
+        function saveIncomeFields() {
+            if (!workpaper) return;
+
+            var grossVal = document.getElementById('grossRentalIncome').value.replace(/[^0-9.]/g, '');
+            var oldGross = workpaper.grossRentalIncome;
+            var newGross = parseFloat(grossVal) || 0;
+            if (oldGross !== newGross) {
+                logActivity(workpaper.workpaperId, 'FieldChange', 'grossRentalIncome',
+                    String(oldGross), String(newGross));
+            }
+
+            var daysRented = parseInt(document.getElementById('daysRented').value, 10) || 0;
+            if (workpaper.daysRented !== daysRented) {
+                logActivity(workpaper.workpaperId, 'FieldChange', 'daysRented',
+                    String(workpaper.daysRented), String(daysRented));
+            }
+
+            var daysAvailable = parseInt(document.getElementById('daysAvailable').value, 10) || 0;
+            var daysPrivate = parseInt(document.getElementById('daysPrivate').value, 10) || 0;
+            var mixedUse = document.getElementById('mixedUse').checked;
+
+            if (workpaper.mixedUse !== mixedUse) {
+                logActivity(workpaper.workpaperId, 'FieldChange', 'mixedUse',
+                    String(workpaper.mixedUse), String(mixedUse));
+            }
+
+            updateWorkpaper(workpaper.workpaperId, {
+                grossRentalIncome: newGross,
+                daysRented: daysRented,
+                daysAvailable: daysAvailable,
+                daysPrivate: daysPrivate,
+                mixedUse: mixedUse
+            });
+            workpaper = getWorkpaperById(workpaper.workpaperId);
+        }
+
+        function populateIncomeFields() {
+            if (!workpaper) return;
+            document.getElementById('grossRentalIncome').value =
+                workpaper.grossRentalIncome ? workpaper.grossRentalIncome.toFixed(2) : '';
+            document.getElementById('daysRented').value = workpaper.daysRented || '';
+            document.getElementById('daysAvailable').value = workpaper.daysAvailable || '';
+            document.getElementById('daysPrivate').value = workpaper.daysPrivate || '';
+            document.getElementById('mixedUse').checked = !!workpaper.mixedUse;
+            document.getElementById('daysPrivate-group').hidden = !workpaper.mixedUse;
+        }
+
+        /* ------------------------------------------------
+           Expense Form (REQ-002)
+           ------------------------------------------------ */
+        function populateCategoryDropdown() {
+            var sel = document.getElementById('exp-category');
+            sel.innerHTML = '';
+            EXPENSE_CATEGORIES.forEach(function (cat) {
+                var opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = formatCategory(cat);
+                sel.appendChild(opt);
+            });
+        }
+
+        function bindExpenseForm() {
+            document.getElementById('btn-add-expense').addEventListener('click', function () {
+                var category = document.getElementById('exp-category').value;
+                var description = document.getElementById('exp-description').value.trim();
+                var amount = parseFloat(document.getElementById('exp-amount').value) || 0;
+                var isCapital = document.getElementById('exp-capital').checked;
+                var isApportionable = document.getElementById('exp-apportionable').checked;
+
+                if (!description || amount <= 0) return;
+
+                addExpenseLine(workpaper.workpaperId, {
+                    category: category,
+                    description: description,
+                    amount: amount,
+                    isCapital: isCapital,
+                    isApportionable: isApportionable
+                });
+
+                // Clear form
+                document.getElementById('exp-description').value = '';
+                document.getElementById('exp-amount').value = '';
+                document.getElementById('exp-capital').checked = false;
+                document.getElementById('exp-apportionable').checked = true;
+
+                workpaper = getWorkpaperById(workpaper.workpaperId);
+                recalculate();
+            });
+        }
+
+        function renderExpenses() {
+            if (!workpaper) return;
+            var lines = workpaper.expenseLines || [];
+            var tbody = document.getElementById('expense-tbody');
+            var emptyEl = document.getElementById('expenses-empty');
+            var tfoot = document.getElementById('expense-tfoot');
+
+            if (lines.length === 0) {
+                tbody.innerHTML = '';
+                emptyEl.hidden = false;
+                tfoot.hidden = true;
+                return;
+            }
+            emptyEl.hidden = true;
+            tfoot.hidden = false;
+
+            var html = '';
+            var total = 0;
+            lines.forEach(function (line) {
+                total += parseFloat(line.amount) || 0;
+                html += '<tr>' +
+                    '<td>' + escapeHtml(formatCategory(line.category)) + '</td>' +
+                    '<td>' + escapeHtml(line.description) + '</td>' +
+                    '<td class="amount-cell">' + formatCurrency(line.amount) + '</td>' +
+                    '<td class="checkbox-cell">' + (line.isCapital ? '✓' : '') + '</td>' +
+                    '<td class="checkbox-cell">' + (line.isApportionable ? '✓' : '') + '</td>' +
+                    '<td class="actions-cell">' +
+                        '<button type="button" class="btn-danger btn-small" ' +
+                            'data-remove-line="' + line.lineId + '" ' +
+                            'aria-label="Remove ' + escapeHtml(line.description) + '">' +
+                            'Remove' +
+                        '</button>' +
+                    '</td>' +
+                '</tr>';
+            });
+            tbody.innerHTML = html;
+            document.getElementById('expense-total').textContent = formatCurrency(total);
+
+            // Bind remove buttons
+            tbody.querySelectorAll('[data-remove-line]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var lineId = btn.getAttribute('data-remove-line');
+                    removeExpenseLine(workpaper.workpaperId, lineId);
+                    workpaper = getWorkpaperById(workpaper.workpaperId);
+                    recalculate();
+                });
+            });
+        }
+
+        /* ------------------------------------------------
+           Results (REQ-007)
+           ------------------------------------------------ */
+        function renderResults() {
+            if (!workpaper) return;
+
+            document.getElementById('res-adjustedIncome').textContent = formatCurrency(workpaper.adjustedIncome);
+            document.getElementById('res-adjustedExpenses').textContent = formatCurrency(workpaper.adjustedDeductibleExpenses);
+
+            var netEl = document.getElementById('res-netRentalIncome');
+            netEl.textContent = formatCurrency(workpaper.netRentalIncome);
+            netEl.className = 'result-block__value ' +
+                (workpaper.netRentalIncome >= 0 ? 'result-block__value--positive' : 'result-block__value--negative');
+
+            document.getElementById('res-lossCarryForward').textContent = formatCurrency(workpaper.lossCarryForward);
+
+            // Detailed breakdown
+            document.getElementById('res-totalExpenses').textContent = formatCurrency(workpaper.totalExpenses);
+            document.getElementById('res-capitalExcluded').textContent = formatCurrency(workpaper.capitalExcludedTotal);
+            document.getElementById('res-deductibleBase').textContent = formatCurrency(workpaper.deductibleExpenseBase);
+            document.getElementById('res-ownedExpenses').textContent = formatCurrency(workpaper.ownedExpenses);
+            document.getElementById('res-apportionedExpenses').textContent = formatCurrency(workpaper.apportionedExpenses);
+            document.getElementById('res-interestTotal').textContent = formatCurrency(workpaper.interestTotal);
+            document.getElementById('res-deductibleInterest').textContent = formatCurrency(workpaper.deductibleInterest);
+
+            renderStatusActions();
+        }
+
+        /* ------------------------------------------------
+           Status Lifecycle (REQ-011)
+           ------------------------------------------------ */
+        function renderStatusActions() {
+            if (!workpaper) return;
+            var badge = document.getElementById('results-status-badge');
+            var headerBadge = document.getElementById('header-status-badge');
+            var statusLabel = workpaper.status.replace(/([A-Z])/g, ' $1').trim();
+
+            badge.textContent = statusLabel;
+            badge.className = 'status-badge status-badge--' + workpaper.status;
+            headerBadge.textContent = statusLabel;
+            headerBadge.className = 'status-badge status-badge--' + workpaper.status;
+
+            var btnsContainer = document.getElementById('status-buttons');
+            var html = '';
+            var currentIdx = STATUS_ORDER.indexOf(workpaper.status);
+
+            // Forward transition
+            if (currentIdx < STATUS_ORDER.length - 1) {
+                var nextStatus = STATUS_ORDER[currentIdx + 1];
+                var nextLabel = nextStatus.replace(/([A-Z])/g, ' $1').trim();
+                html += '<button type="button" class="btn-primary--compact btn-small" ' +
+                    'data-transition="' + nextStatus + '">Move to ' + nextLabel + '</button>';
+            }
+
+            // Back to InProgress from ReadyToReview
+            if (workpaper.status === 'ReadyToReview') {
+                html += '<button type="button" class="btn-secondary btn-small" ' +
+                    'data-transition="InProgress">Back to In Progress</button>';
+            }
+
+            btnsContainer.innerHTML = html;
+
+            btnsContainer.querySelectorAll('[data-transition]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var newStatus = btn.getAttribute('data-transition');
+                    var result = transitionStatus(workpaper.workpaperId, newStatus);
+                    if (result) {
+                        workpaper = result;
+                        renderAll();
+                    }
+                });
+            });
+        }
+
+        /* ------------------------------------------------
+           Evidence (REQ-009)
+           ------------------------------------------------ */
+        function bindEvidenceForm() {
+            document.getElementById('btn-add-evidence').addEventListener('click', function () {
+                var fileName = document.getElementById('ev-fileName').value.trim();
+                var contentType = document.getElementById('ev-contentType').value.trim() || 'application/octet-stream';
+                var sizeBytes = parseInt(document.getElementById('ev-sizeBytes').value, 10) || 0;
+
+                if (!fileName) return;
+
+                addEvidence(workpaper.workpaperId, {
+                    fileName: fileName,
+                    contentType: contentType,
+                    sizeBytes: sizeBytes
+                });
+
+                // Clear form
+                document.getElementById('ev-fileName').value = '';
+                document.getElementById('ev-contentType').value = '';
+                document.getElementById('ev-sizeBytes').value = '';
+
+                renderEvidence();
+                renderDiagnostics();
+            });
+        }
+
+        function renderEvidence() {
+            var evidenceItems = getEvidenceForWorkpaper(workpaper.workpaperId);
+            var listEl = document.getElementById('evidence-list');
+            var emptyEl = document.getElementById('evidence-empty');
+
+            if (evidenceItems.length === 0) {
+                listEl.innerHTML = '';
+                emptyEl.hidden = false;
+                return;
+            }
+            emptyEl.hidden = true;
+
+            var html = '';
+            evidenceItems.forEach(function (ev) {
+                var sizeStr = ev.sizeBytes > 1024
+                    ? (ev.sizeBytes / 1024).toFixed(1) + ' KB'
+                    : ev.sizeBytes + ' bytes';
+
+                html += '<div class="evidence-item">' +
+                    '<div class="evidence-item__info">' +
+                        '<span class="evidence-item__name">' + escapeHtml(ev.fileName) + '</span>' +
+                        '<span class="evidence-item__meta">' +
+                            escapeHtml(ev.contentType) + ' &middot; ' + sizeStr +
+                            ' &middot; ' + formatDate(ev.uploadedAt) +
+                        '</span>' +
+                    '</div>' +
+                    '<button type="button" class="btn-danger btn-small" ' +
+                        'data-remove-evidence="' + ev.evidenceId + '" ' +
+                        'aria-label="Remove ' + escapeHtml(ev.fileName) + '">' +
+                        'Remove' +
+                    '</button>' +
+                '</div>';
+            });
+            listEl.innerHTML = html;
+
+            listEl.querySelectorAll('[data-remove-evidence]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    removeEvidence(btn.getAttribute('data-remove-evidence'));
+                    renderEvidence();
+                    renderDiagnostics();
+                });
+            });
+        }
+
+        /* ------------------------------------------------
+           Activity Log (REQ-006)
+           ------------------------------------------------ */
+        function renderActivity() {
+            var activities = getActivitiesForWorkpaper(workpaper.workpaperId);
+            var logEl = document.getElementById('activity-log');
+            var emptyEl = document.getElementById('activity-empty');
+
+            if (activities.length === 0) {
+                logEl.innerHTML = '';
+                emptyEl.hidden = false;
+                return;
+            }
+            emptyEl.hidden = true;
+
+            var html = '';
+            activities.forEach(function (act) {
+                var valuesHtml = '';
+                if (act.oldValue && act.newValue) {
+                    valuesHtml = '<span class="activity-entry__values"> ' +
+                        escapeHtml(act.oldValue) + ' → ' + escapeHtml(act.newValue) + '</span>';
+                } else if (act.newValue) {
+                    valuesHtml = '<span class="activity-entry__values"> → ' + escapeHtml(act.newValue) + '</span>';
+                } else if (act.oldValue) {
+                    valuesHtml = '<span class="activity-entry__values"> ' + escapeHtml(act.oldValue) + ' → (removed)</span>';
+                }
+
+                html += '<div class="activity-entry">' +
+                    '<span class="activity-entry__time">' + formatDate(act.timestamp) + '</span>' +
+                    '<span class="activity-entry__body">' +
+                        '<span class="activity-entry__action">' + escapeHtml(act.actionType) + '</span>' +
+                        (act.fieldName ? ' <span class="activity-entry__field">' + escapeHtml(act.fieldName) + '</span>' : '') +
+                        valuesHtml +
+                    '</span>' +
+                '</div>';
+            });
+            logEl.innerHTML = html;
+        }
+
+        /* ------------------------------------------------
+           Diagnostics (REQ-012)
+           ------------------------------------------------ */
+        function renderDiagnostics() {
+            var diags = runDiagnostics(workpaper.workpaperId);
+            var banner = document.getElementById('diagnostics-banner');
+
+            if (diags.length === 0) {
+                banner.hidden = true;
+                banner.innerHTML = '';
+                return;
+            }
+            banner.hidden = false;
+
+            var html = '';
+            diags.forEach(function (d) {
+                html += '<span class="diag-badge diag-badge--' + d.level + '">' +
+                    d.level.charAt(0).toUpperCase() + d.level.slice(1) + ': ' +
+                    escapeHtml(d.message) +
+                '</span>';
+            });
+            banner.innerHTML = html;
+        }
+
+        /* ------------------------------------------------
+           Recalculate & Render All
+           ------------------------------------------------ */
+        function recalculate() {
+            if (!workpaper) return;
+            calculateWorkpaper(workpaper.workpaperId);
+            workpaper = getWorkpaperById(workpaper.workpaperId);
+            renderResults();
+            renderExpenses();
+            renderDiagnostics();
+            renderActivity();
+        }
+
+        function renderAll() {
+            workpaper = getWorkpaperById(workpaper.workpaperId);
+            populateIncomeFields();
+            recalculate();
+            renderEvidence();
+        }
+
+        /* ------------------------------------------------
+           Utilities
+           ------------------------------------------------ */
+        function escapeHtml(str) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str || ''));
+            return div.innerHTML;
+        }
+
+        function debounce(fn, delay) {
+            var timer;
+            return function () {
+                var context = this;
+                var args = arguments;
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    fn.apply(context, args);
+                }, delay);
+            };
+        }
+
+        /* ------------------------------------------------
+           Bootstrap
+           ------------------------------------------------ */
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
