@@ -1,6 +1,7 @@
 ---
 description: "Task Planner agent responsible for converting validated requirements into an executable delivery plan."
 name: "Task Planner"
+tools: [vscode, execute, read, agent, edit, search, web, todo]
 ---
 
 # Task Planner

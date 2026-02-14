@@ -1,0 +1,462 @@
+/* ================================================
+   Design Tokens
+   ================================================ */
+:root {
+    --color-bg-primary: #0d1117;
+    --color-bg-secondary: #161b22;
+    --color-bg-accent: #21262d;
+    --color-bg-hover: #30363d;
+    --color-text-primary: #e6edf3;
+    --color-text-secondary: #9198a1;
+    --color-text-tertiary: #6e7681;
+    --color-accent-primary: #2f81f7;
+    --color-accent-primary-hover: #539bf5;
+    --color-accent-primary-active: #6ca6ff;
+    --color-success: #3fb950;
+    --color-success-bg: #1f3326;
+    --color-error: #f85149;
+    --color-error-bg: #3b1219;
+    --color-warning: #d29922;
+    --color-border: #30363d;
+    --color-border-muted: #21262d;
+
+    --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+    --font-family-mono: ui-monospace, 'Cascadia Code', 'SF Mono', Monaco, 'Courier New', monospace;
+
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.5rem;
+    --font-size-2xl: 2rem;
+
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+
+    --shadow-sm: 0 0 0 1px rgba(255, 255, 255, 0.05);
+    --shadow-md: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 8px 16px rgba(0, 0, 0, 0.4);
+
+    --transition-fast: 150ms ease-in-out;
+    --transition-base: 250ms ease-in-out;
+}
+
+/* ================================================
+   Reset & Base
+   ================================================ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+    background-color: var(--color-bg-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: var(--spacing-xl);
+}
+
+/* ================================================
+   Accessibility
+   ================================================ */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+:focus-visible {
+    outline: 2px solid var(--color-accent-primary);
+    outline-offset: 2px;
+}
+
+/* ================================================
+   Layout
+   ================================================ */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ================================================
+   Header
+   ================================================ */
+.header {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+}
+
+.header h1 {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.header .subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+}
+
+/* ================================================
+   Card
+   ================================================ */
+.card {
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+}
+
+/* ================================================
+   Form Elements
+   ================================================ */
+.form-group {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.help-text {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-prefix {
+    position: absolute;
+    left: 12px;
+    color: var(--color-text-secondary);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-base);
+    pointer-events: none;
+    z-index: 1;
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text-primary);
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    min-height: 44px;
+}
+
+input[type="text"]:focus,
+select:focus {
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.3);
+    outline: none;
+}
+
+input[type="text"].has-error {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 3px rgba(248, 81, 73, 0.2);
+}
+
+.salary-input {
+    padding-left: 28px;
+    font-family: var(--font-family-mono);
+    text-align: right;
+}
+
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239198a1' d='M6 8.825L0.375 3.2l0.85-0.85L6 7.125l4.775-4.775 0.85 0.85z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+/* ================================================
+   Checkbox
+   ================================================ */
+.checkbox-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    min-height: 44px;
+    padding: var(--spacing-xs) 0;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    margin-top: 2px;
+    accent-color: var(--color-accent-primary);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.checkbox-label-text {
+    cursor: pointer;
+}
+
+/* ================================================
+   Validation Error
+   ================================================ */
+.error-message {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-error);
+    margin-top: var(--spacing-xs);
+}
+
+.error-message[hidden] {
+    display: none;
+}
+
+/* ================================================
+   Button
+   ================================================ */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-accent-primary);
+    color: #ffffff;
+    font-family: var(--font-family-base);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    min-height: 44px;
+    min-width: 44px;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-accent-primary-hover);
+}
+
+.btn-primary:active {
+    background-color: var(--color-accent-primary-active);
+}
+
+.btn-primary:focus-visible {
+    box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.5);
+}
+
+/* ================================================
+   Results
+   ================================================ */
+.results-section {
+    animation: fadeIn var(--transition-base);
+}
+
+.results-section[hidden] {
+    display: none;
+}
+
+.results-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-md);
+}
+
+/* ================================================
+   Breakdown Table (dl)
+   ================================================ */
+.breakdown dl {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.breakdown .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--color-border-muted);
+}
+
+.breakdown .row:last-child {
+    border-bottom: none;
+}
+
+.breakdown .row[hidden] {
+    display: none;
+}
+
+.breakdown dt {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.breakdown dd {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-base);
+    font-weight: 500;
+}
+
+.deduction {
+    color: var(--color-error);
+}
+
+.take-home-row {
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-md) !important;
+    border-top: 2px solid var(--color-border) !important;
+}
+
+.take-home-row dt {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.take-home-row dd {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-success);
+}
+
+/* ================================================
+   Collapsible Annual Details
+   ================================================ */
+details {
+    margin-top: var(--spacing-lg);
+}
+
+details summary {
+    cursor: pointer;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-accent-primary);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) 0;
+    min-height: 44px;
+    user-select: none;
+}
+
+details summary::-webkit-details-marker {
+    display: none;
+}
+
+details summary::before {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 6px solid var(--color-accent-primary);
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    transition: transform var(--transition-fast);
+    flex-shrink: 0;
+}
+
+details[open] summary::before {
+    transform: rotate(90deg);
+}
+
+details .breakdown {
+    padding-top: var(--spacing-md);
+}
+
+/* ================================================
+   Disclaimer
+   ================================================ */
+.disclaimer {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin-top: var(--spacing-lg);
+    line-height: 1.5;
+}
+
+/* ================================================
+   Animations
+   ================================================ */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ================================================
+   Responsive — single breakpoint at 640px
+   ================================================ */
+@media (max-width: 640px) {
+    html {
+        font-size: 14px;
+    }
+
+    body {
+        padding: var(--spacing-md);
+    }
+
+    .card {
+        padding: var(--spacing-md);
+    }
+
+    .header h1 {
+        font-size: var(--font-size-xl);
+    }
+
+    .take-home-row dd {
+        font-size: var(--font-size-lg);
+    }
+}

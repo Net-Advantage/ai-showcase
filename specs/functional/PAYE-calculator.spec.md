@@ -52,7 +52,7 @@ A web-based calculator that computes New Zealand PAYE (Pay As You Earn) tax, Kiw
 
 - **Label**: "KiwiSaver Contribution Rate"
 - **Type**: Dropdown/Select
-- **Options**: 3%, 4%, 6%, 8%, 10%
+- **Options**: 0%, 3%, 4%, 6%, 8%, 10%
 - **Default Value**: 3%
 - **Help Text**: "Select your KiwiSaver employee contribution rate"
 - **Required**: Yes (with default pre-selected)

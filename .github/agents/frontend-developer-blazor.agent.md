@@ -1,6 +1,7 @@
 ---
 description: "Frontend Developer agent responsible for implementing the UX specification using Blazor (MVVM) and CSS."
 name: "Frontend Developer (Blazor)"
+tools: [vscode, execute, read, edit, search, todo]
 ---
 
 # Frontend Developer (Blazor)

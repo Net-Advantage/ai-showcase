@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NZ PAYE Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="container">
+        <!-- REQ-MVP-016: Header -->
+        <header class="header">
+            <h1>NZ PAYE Calculator</h1>
+            <p class="subtitle">Calculate your monthly take-home pay based on your annual salary</p>
+        </header>
+
+        <!-- Calculator Inputs -->
+        <section class="card" aria-label="Calculator inputs">
+            <form id="paye-form" novalidate>
+                <!-- REQ-MVP-001: Annual Salary Input -->
+                <div class="form-group">
+                    <label for="annual-salary">Annual Salary (NZD)</label>
+                    <span class="help-text" id="salary-help">Enter your gross annual salary before tax</span>
+                    <div class="input-wrapper">
+                        <span class="input-prefix" aria-hidden="true">$</span>
+                        <input
+                            type="text"
+                            id="annual-salary"
+                            class="salary-input"
+                            placeholder="60,000"
+                            value="60,000"
+                            inputmode="numeric"
+                            aria-describedby="salary-help salary-error"
+                        >
+                    </div>
+                    <!-- REQ-MVP-028: Inline validation error -->
+                    <div id="salary-error" class="error-message" role="alert" hidden></div>
+                </div>
+
+                <!-- REQ-MVP-003, REQ-007: KiwiSaver Rate Dropdown -->
+                <div class="form-group">
+                    <label for="kiwisaver-rate">KiwiSaver Contribution Rate</label>
+                    <select id="kiwisaver-rate">
+                        <!-- REQ-007: 0% option listed first, 3% remains default -->
+                        <option value="0">0%</option>
+                        <option value="0.03" selected>3%</option>
+                        <option value="0.04">4%</option>
+                        <option value="0.06">6%</option>
+                        <option value="0.08">8%</option>
+                        <option value="0.10">10%</option>
+                    </select>
+                </div>
+
+                <!-- REQ-MVP-004: Student Loan Checkbox -->
+                <div class="form-group">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="student-loan" aria-describedby="student-loan-help">
+                        <label for="student-loan" class="checkbox-label-text">
+                            Do you have a student loan?
+                            <span class="help-text" id="student-loan-help">Student loan repayments apply if your income exceeds the repayment threshold</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Calculate Button -->
+                <button type="submit" class="btn-primary">Calculate</button>
+            </form>
+        </section>
+
+        <!-- REQ-MVP-012: Results Section -->
+        <section id="results" class="card results-section" hidden aria-label="Calculation results" aria-live="polite">
+            <!-- REQ-MVP-012: Monthly Breakdown (primary, always visible after calculation) -->
+            <h2 class="results-title">Monthly Breakdown</h2>
+            <div class="breakdown" id="monthly-breakdown">
+                <dl>
+                    <div class="row">
+                        <dt>Monthly Gross Salary</dt>
+                        <dd id="monthly-gross"></dd>
+                    </div>
+                    <div class="row">
+                        <dt>PAYE Tax</dt>
+                        <dd id="monthly-paye" class="deduction"></dd>
+                    </div>
+                    <div class="row">
+                        <dt id="monthly-kiwisaver-label">KiwiSaver (3%)</dt>
+                        <dd id="monthly-kiwisaver" class="deduction"></dd>
+                    </div>
+                    <div class="row">
+                        <dt>ACC Levy (1.53%)</dt>
+                        <dd id="monthly-acc" class="deduction"></dd>
+                    </div>
+                    <div class="row" id="monthly-student-loan-row" hidden>
+                        <dt>Student Loan (12%)</dt>
+                        <dd id="monthly-student-loan" class="deduction"></dd>
+                    </div>
+                    <div class="row take-home-row">
+                        <dt>Take-Home Pay</dt>
+                        <dd id="monthly-take-home"></dd>
+                    </div>
+                </dl>
+            </div>
+
+            <!-- REQ-MVP-014: Annual Breakdown (collapsible, collapsed by default) -->
+            <details>
+                <summary>View Annual Breakdown</summary>
+                <div class="breakdown" id="annual-breakdown">
+                    <dl>
+                        <div class="row">
+                            <dt>Annual Gross Salary</dt>
+                            <dd id="annual-gross"></dd>
+                        </div>
+                        <div class="row">
+                            <dt>PAYE Tax</dt>
+                            <dd id="annual-paye" class="deduction"></dd>
+                        </div>
+                        <div class="row">
+                            <dt id="annual-kiwisaver-label">KiwiSaver (3%)</dt>
+                            <dd id="annual-kiwisaver" class="deduction"></dd>
+                        </div>
+                        <div class="row">
+                            <dt>ACC Levy (1.53%)</dt>
+                            <dd id="annual-acc" class="deduction"></dd>
+                        </div>
+                        <div class="row" id="annual-student-loan-row" hidden>
+                            <dt>Student Loan (12%)</dt>
+                            <dd id="annual-student-loan" class="deduction"></dd>
+                        </div>
+                        <div class="row take-home-row">
+                            <dt>Take-Home Pay</dt>
+                            <dd id="annual-take-home"></dd>
+                        </div>
+                    </dl>
+                </div>
+            </details>
+
+            <!-- REQ-MVP-015: Disclaimer -->
+            <p class="disclaimer">
+                Note: This calculation uses 2025/2026 NZ tax rates. This is an estimate and does not
+                include other deductions such as union fees, insurance, or special tax codes.
+            </p>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

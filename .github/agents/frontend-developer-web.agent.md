@@ -1,6 +1,7 @@
 ---
 description: "Frontend Developer agent responsible for implementing the UX specification using HTML, CSS, and JavaScript."
 name: "Frontend Developer (Web)"
+tools: [vscode, execute, read, edit, search, todo]
 ---
 
 # Frontend Developer (Web)
