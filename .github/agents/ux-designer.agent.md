@@ -129,6 +129,18 @@ Example:
 - Disabled when form validation fails
 - Loading indicator shown during submission
 
+### Shared CSS File
+
+The design system is implemented as a **shared CSS file** at `/src/mvp/styles.css`.
+
+- Before defining new design tokens, **read `/src/mvp/styles.css`** to understand existing tokens, component classes, and patterns.
+- All design token definitions (colours, typography, spacing, shadows, radii, transitions) must be expressed as **CSS custom properties** in `:root`, consistent with the existing file.
+- New tokens must follow the existing naming conventions (e.g. `--color-*`, `--font-size-*`, `--spacing-*`).
+- New component definitions must reference existing CSS class patterns (e.g. `.card`, `.btn-primary`, `.form-group`, `.breakdown`).
+- If a new token or component class is needed, define it as an **extension** of the shared file — never contradict or redefine existing tokens.
+- When producing design system output, explicitly note which tokens and classes already exist in `/src/mvp/styles.css` vs. which are new additions.
+- The shared CSS file is the **single source of truth** for implemented design tokens. The UX design spec (`/specs/non-functional/ux-design.spec.md`) documents intent; `/src/mvp/styles.css` documents implementation.
+
 ---
 
 ## 5. Interaction and State Definitions

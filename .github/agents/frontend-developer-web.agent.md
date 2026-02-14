@@ -181,11 +181,27 @@ Do not embed business logic in API clients.
 
 All styling must be implemented in `.css` files.
 
+### Shared Design System CSS
+
+The design system is implemented as a **shared CSS file** at `/src/mvp/styles.css`. This is the single source of truth for design tokens and base component styles.
+
+**Mandatory rules:**
+
+1. **Always link the shared stylesheet first.** Every HTML page must include `<link rel="stylesheet" href="../../styles.css">` (adjust relative path based on page depth) before any module-specific stylesheet.
+2. **Read `/src/mvp/styles.css` before writing any CSS.** Understand existing design tokens (`--color-*`, `--font-size-*`, `--spacing-*`, `--radius-*`, `--shadow-*`, `--transition-*`) and component classes (`.card`, `.btn-primary`, `.form-group`, `.breakdown`, `.error-message`, etc.).
+3. **Never duplicate or redefine shared tokens or classes.** Use existing design tokens via `var(--token-name)`. Do not hardcode colour values, font sizes, spacing, or radii that already exist as tokens.
+4. **Module-specific CSS goes in a separate file.** Create a module-level CSS file (e.g. `rental-styles.css`) for styles unique to that feature. Link it after `styles.css`.
+5. **Extend, don't override.** Module-specific CSS should add new classes or specialise existing patterns. Do not override base component styles unless explicitly required by UX specification.
+6. **New design tokens belong in `styles.css`.** If a new token is needed across multiple modules, add it to the shared file's `:root` block. If it is module-specific, define it in the module CSS file's own `:root` or scoped selector.
+7. **Follow existing naming conventions.** Use the same naming patterns as the shared file (e.g. `--color-*` for colours, `.btn-*` for buttons, `.form-*` for form elements).
+
+### General CSS Rules
+
 Implement CSS aligned with:
 
-- Colour system
-- Typography scale
-- Spacing system
+- Colour system (via shared tokens)
+- Typography scale (via shared tokens)
+- Spacing system (via shared tokens)
 - Grid and layout rules
 - Component definitions
 
@@ -201,6 +217,7 @@ Rules:
 - No inline styles
 - No `<style>` blocks in HTML
 - No ad hoc CSS
+- No hardcoded values that duplicate existing design tokens
 
 ---
 
