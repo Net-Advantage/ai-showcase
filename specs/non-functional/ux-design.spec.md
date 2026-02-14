@@ -787,6 +787,19 @@ Components/Layout/
 - Transforms and Transitions
 - `:focus-visible` pseudo-class
 
+**Vendor Prefix Requirements:**
+- All CSS properties that require vendor prefixes for the target browser matrix **must** include them.
+- `-webkit-` prefixes are required for any property not yet unprefixed in the last 2 versions of Safari and Chrome.
+- When a standard property and its prefixed variant are both needed, the **unprefixed property must appear last** (progressive enhancement).
+- Common properties requiring `-webkit-` prefix consideration:
+  - `appearance` → `-webkit-appearance`
+  - `backdrop-filter` → `-webkit-backdrop-filter`
+  - `text-size-adjust` → `-webkit-text-size-adjust`
+  - `user-select` → `-webkit-user-select`
+  - Pseudo-elements like `::-webkit-details-marker`, `::-webkit-scrollbar`
+- If a build tool (e.g., Autoprefixer, PostCSS) is used, document it in the project. If no build tool is used (e.g., vanilla CSS), prefixes must be applied manually.
+- The frontend developer is responsible for verifying vendor prefix coverage against the target browser matrix before marking work as complete.
+
 **Graceful Degradation:**
 - Browsers without `:focus-visible` use `:focus`
 - No critical functionality depends on CSS
