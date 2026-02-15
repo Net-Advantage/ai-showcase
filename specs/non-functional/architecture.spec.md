@@ -25,10 +25,22 @@ All systems must use the following technology stack. These choices are fixed and
 - **Local Orchestration**: .NET Aspire
 
 ### 1.3 Frontend Stack
-- **Framework**: Blazor
+
+Two frontend approaches are supported. Each feature specifies which approach is used.
+
+#### 1.3.1 Blazor Server
+- **Framework**: Blazor (Server rendering mode)
 - **Pattern**: MVVM (Model-View-ViewModel)
 - **Rendering Mode**: As defined per feature requirements
 - **Styling**: Custom CSS (Bootstrap-inspired patterns without heavy dependency)
+- **Use when**: Feature requires rich interactive UI with direct backend integration via .NET Aspire
+
+#### 1.3.2 Web (HTML, CSS, JavaScript)
+- **Languages**: HTML5, CSS3, vanilla JavaScript
+- **Pattern**: Module pattern with localStorage data layer
+- **Rendering Mode**: Client-side (static files, no server rendering)
+- **Styling**: Custom CSS (shared design system)
+- **Use when**: Feature is a standalone client-side prototype or MVP that does not require backend integration
 
 ### 1.4 DevOps and CI/CD
 - **Version Control**: Git (GitHub)
@@ -77,9 +89,9 @@ All backend code must follow clean layering principles:
 - Domain has no dependencies on other layers
 - Infrastructure details never leak to Domain
 
-### 2.2 Frontend Architecture (Blazor MVVM)
+### 2.2 Frontend Architecture (Blazor Server)
 
-All frontend code must follow MVVM pattern:
+All Blazor frontend code must follow the MVVM pattern:
 
 #### **Views (.razor files)**
 - Contain markup only
@@ -107,7 +119,36 @@ All frontend code must follow MVVM pattern:
 - Domain rules enforced server-side, not in UI
 - API calls isolated in service classes or ViewModels
 
-### 2.3 Database Strategy
+### 2.3 Frontend Architecture (Web — HTML, CSS, JavaScript)
+
+All Web frontend code must follow a clean separation of concerns:
+
+#### **HTML Pages**
+- Contain markup and structure only
+- Include inline `<script>` blocks for page-specific controller logic
+- Reference shared JavaScript modules via `<script src="...">`
+- No business logic embedded in markup attributes
+
+#### **Shared JavaScript Modules**
+- Contain data model, CRUD operations, calculation pipelines, and utility functions
+- Use the module pattern (IIFEs or `'use strict'` scoped files)
+- Persist data via localStorage (MVP) or API calls (production)
+- Expose pure functions where possible (no side effects beyond storage)
+
+#### **CSS**
+- Shared design system stylesheet for cross-cutting styles
+- Module-specific stylesheets extending the shared system
+- Follow BEM-inspired naming conventions
+- Responsive design via media queries
+
+**Rules:**
+- No business logic in HTML event attributes
+- Data layer functions must not reference DOM elements
+- Page controller scripts must not duplicate shared module logic
+- All user-facing text must be escaped to prevent XSS
+- Accessibility: WCAG 2.1 AA, keyboard navigation, ARIA attributes
+
+### 2.4 Database Strategy
 
 #### **Entity Framework Core Patterns**
 - Code-first approach
@@ -169,7 +210,7 @@ All frontend code must follow MVVM pattern:
 - HTTPS only (TLS 1.2+)
 - Input validation on all endpoints
 - SQL injection prevention via parameterized queries (EF Core default)
-- XSS protection (Blazor automatic escaping)
+- XSS protection (Blazor automatic escaping; manual escaping in Web frontends)
 - CORS policies explicitly defined
 
 ---
@@ -336,13 +377,22 @@ All frontend code must follow MVVM pattern:
 - Use compiled queries for hot paths
 - Index foreign keys and frequently queried columns
 
-### 12.3 Blazor MVVM
+### 12.3 Blazor Server
 - ViewModels implement observable patterns
 - Use `@bind` for two-way binding
 - Error boundaries for fault isolation
 - Dispose of subscriptions in ViewModels
 
-### 12.4 Azure Container Apps
+### 12.4 Web (HTML, CSS, JavaScript)
+- Use vanilla JavaScript only (no frameworks or transpilers)
+- `'use strict'` in all script files and blocks
+- Use `crypto.randomUUID()` for client-side ID generation
+- Prefer localStorage for MVP persistence; design functions for easy promotion to API calls
+- Escape all user-generated content before DOM insertion
+- Use semantic HTML elements and ARIA attributes for accessibility
+- Support keyboard navigation for all interactive elements
+
+### 12.5 Azure Container Apps
 - Use managed identity for Azure service access
 - Configure auto-scaling rules
 - Health probes configured
@@ -356,7 +406,7 @@ The following are **fixed constraints** and cannot be changed without Product Ow
 
 1. All hosting must be Azure Container Apps (no VMs, no App Service)
 2. All databases must be SQL Server (no PostgreSQL, MongoDB, etc.)
-3. All frontend must be Blazor using MVVM (no React, Angular, Vue)
+3. All frontend must use either Blazor Server (with MVVM pattern) or Web (HTML, CSS, JavaScript) — no React, Angular, or Vue
 4. All backend must be .NET 10 REST APIs (no GraphQL, no gRPC without approval)
 5. All IaC must be Bicep (no Terraform, ARM templates)
 6. All CI/CD must be GitHub Actions (no Azure DevOps without approval)
