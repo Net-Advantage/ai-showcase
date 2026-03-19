@@ -51,11 +51,7 @@ public class BasicCalculationJourneyTests : PlaywrightTestBase
     {
         // Arrange
         await CalculatorPage!.NavigateToCalculator();
-        await CalculatorPage.EnterSalary(60000);
-
-        // Act
-        await CalculatorPage.ClickCalculate();
-        await CalculatorPage.WaitForResults();
+        await CalculatorPage.WaitForAutoCalculatedResults();
 
         // Assert
         Assert.True(await CalculatorPage.AreResultsDisplayed(), "Results should be displayed");
@@ -71,8 +67,8 @@ public class BasicCalculationJourneyTests : PlaywrightTestBase
     {
         // Arrange
         await CalculatorPage!.NavigateToCalculator();
+        await CalculatorPage.WaitForAutoCalculatedResults();
         await CalculatorPage.CalculateSalary(60000);
-        await CalculatorPage.WaitForResults();
 
         // Act
         var monthlyGross = await CalculatorPage.GetMonthlyGrossSalary();
@@ -83,24 +79,24 @@ public class BasicCalculationJourneyTests : PlaywrightTestBase
 
     /// <summary>
     /// E2E-J1-005: Verify monthly PAYE
-    /// Expected: Shows ~$918.33
-    /// Requirements: REQ-014 (monthly conversion), REQ-016 (example validation)
-    /// Note: Calculation = $11,020 annual / 12 = $918.33
+    /// Expected: Shows ~$851.71 (2025/2026 tax brackets)
+    /// Requirements: REQ-014 (monthly conversion), REQ-016 (example validation), REQ-024 (2025/2026 brackets)
+    /// Note: Calculation = $10,220.50 annual / 12 = $851.71
     /// </summary>
     [Fact]
     public async Task E2E_J1_005_Monthly_PAYE_Tax_Is_Correct()
     {
         // Arrange
         await CalculatorPage!.NavigateToCalculator();
+        await CalculatorPage.WaitForAutoCalculatedResults();
         await CalculatorPage.CalculateSalary(60000);
-        await CalculatorPage.WaitForResults();
 
         // Act
         var monthlyPaye = await CalculatorPage.GetMonthlyPayeTax();
 
         // Assert - Allow for rounding differences
         var actual = ParseCurrency(monthlyPaye);
-        AssertCurrencyEqual(918.33m, actual, 1.00m);
+        AssertCurrencyEqual(851.71m, actual, 1.00m);
     }
 
     /// <summary>
@@ -114,8 +110,8 @@ public class BasicCalculationJourneyTests : PlaywrightTestBase
     {
         // Arrange
         await CalculatorPage!.NavigateToCalculator();
+        await CalculatorPage.WaitForAutoCalculatedResults();
         await CalculatorPage.CalculateSalary(60000);
-        await CalculatorPage.WaitForResults();
 
         // Act
         var monthlyKiwiSaver = await CalculatorPage.GetMonthlyKiwiSaver();
@@ -135,8 +131,8 @@ public class BasicCalculationJourneyTests : PlaywrightTestBase
     {
         // Arrange
         await CalculatorPage!.NavigateToCalculator();
+        await CalculatorPage.WaitForAutoCalculatedResults();
         await CalculatorPage.CalculateSalary(60000);
-        await CalculatorPage.WaitForResults();
 
         // Act
         var monthlyAcc = await CalculatorPage.GetMonthlyAccLevy();
@@ -147,24 +143,24 @@ public class BasicCalculationJourneyTests : PlaywrightTestBase
 
     /// <summary>
     /// E2E-J1-008: Verify monthly take-home
-    /// Expected: Shows ~$3,855.17
-    /// Requirements: REQ-014, REQ-016, REQ-017 (take-home calculation)
-    /// Note: $5,000 - $918.33 - $150.00 - $76.50 = ~$3,855.17
+    /// Expected: Shows ~$3,921.79 (2025/2026 tax brackets)
+    /// Requirements: REQ-014, REQ-016, REQ-017 (take-home calculation), REQ-024
+    /// Note: $5,000 - $851.71 - $150.00 - $76.50 = $3,921.79
     /// </summary>
     [Fact]
     public async Task E2E_J1_008_Monthly_TakeHome_Pay_Is_Correct()
     {
         // Arrange
         await CalculatorPage!.NavigateToCalculator();
+        await CalculatorPage.WaitForAutoCalculatedResults();
         await CalculatorPage.CalculateSalary(60000);
-        await CalculatorPage.WaitForResults();
 
         // Act
         var monthlyTakeHome = await CalculatorPage.GetMonthlyTakeHomePay();
 
-        // Assert - Allow some tolerance for calculation differences
+        // Assert - Allow some tolerance for calculation differences (2025/2026 tax brackets)
         var actual = ParseCurrency(monthlyTakeHome);
-        AssertCurrencyEqual(3855.17m, actual, 2.00m);
+        AssertCurrencyEqual(3921.79m, actual, 2.00m);
     }
 
     /// <summary>
@@ -180,13 +176,10 @@ public class BasicCalculationJourneyTests : PlaywrightTestBase
         // Act - Step by step through user journey
         Assert.True(await CalculatorPage.IsPageLoaded());
         Assert.True(await CalculatorPage.IsInputFieldVisible());
-        
-        await CalculatorPage.EnterSalary(60000);
-        await CalculatorPage.ClickCalculate();
-        await CalculatorPage.WaitForResults();
+        await CalculatorPage.WaitForAutoCalculatedResults();
 
         // Assert - All results displayed correctly
-        Assert.True(await CalculatorPage.AreResultsDisplayed());
+        Assert.True(await CalculatorPage.AreResultsDisplayed(), "Results should be displayed");
         
         var gross = await CalculatorPage.GetMonthlyGrossSalary();
         var paye = await CalculatorPage.GetMonthlyPayeTax();
@@ -198,8 +191,8 @@ public class BasicCalculationJourneyTests : PlaywrightTestBase
         AssertCurrencyEquals("$150.00", kiwiSaver);
         AssertCurrencyEquals("$76.50", acc);
         
-        // PAYE and take-home allow slight variation
-        AssertCurrencyEqual(918.33m, ParseCurrency(paye), 1.00m);
-        AssertCurrencyEqual(3855.17m, ParseCurrency(takeHome), 2.00m);
+        // PAYE and take-home allow slight variation (2025/2026 tax brackets)
+        AssertCurrencyEqual(851.71m, ParseCurrency(paye), 1.00m);
+        AssertCurrencyEqual(3921.79m, ParseCurrency(takeHome), 2.00m);
     }
 }

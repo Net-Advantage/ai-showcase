@@ -15,7 +15,7 @@
     </section>
 
     <section class="calculator-input">
-        <EditForm Model="@salaryInput" OnValidSubmit="@HandleCalculate" FormName="PayeCalculatorForm">
+        <EditForm Model="@salaryInput" OnValidSubmit="@HandleFormSubmit" FormName="PayeCalculatorForm">
             <DataAnnotationsValidator />
 
             <div class="form-group">
@@ -27,11 +27,12 @@
                     <InputNumber 
                         id="annual-salary" 
                         @bind-Value="salaryInput.AnnualSalary" 
+                        @oninput="HandleSalaryInput"
                         class="form-control salary-input"
                         placeholder="60,000"
                         aria-describedby="salary-help" />
                 </div>
-                <ValidationMessage For="@(() => salaryInput.AnnualSalary)" class="validation-message" />
+                <ValidationMessage For="@(() => salaryInput.AnnualSalary)" class="validation-message" data-testid="salary-validation-message" />
                 <small id="salary-help" class="form-text">
                     Enter your gross annual salary before tax
                 </small>
@@ -44,8 +45,10 @@
                 <InputSelect 
                     id="kiwisaver-rate"
                     @bind-Value="salaryInput.KiwiSaverRate"
+                    @bind-Value:after="HandleRateChange"
                     class="form-control"
                     aria-describedby="kiwisaver-help">
+                    <option value="0">0%</option>
                     <option value="0.03">3%</option>
                     <option value="0.04">4%</option>
                     <option value="0.06">6%</option>
@@ -62,6 +65,7 @@
                     <InputCheckbox 
                         id="has-student-loan"
                         @bind-Value="salaryInput.HasStudentLoan"
+                        @bind-Value:after="HandleStudentLoanChange"
                         class="form-check-input" />
                     <label for="has-student-loan" class="form-check-label">
                         Do you have a student loan?
@@ -72,7 +76,7 @@
                 </small>
             </div>
 
-            <button type="submit" class="btn btn-primary mt-3" disabled="@isLoading">
+            <button type="submit" id="calculate-button" class="btn btn-primary mt-3" disabled="@isLoading">
                 @if (isLoading)
                 {
                     <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -96,69 +100,69 @@
 
     @if (results != null && !isLoading)
     {
-        <section class="calculator-results mt-4">
+        <section class="calculator-results mt-4" data-testid="results-section">
             <div class="results-card">
                 <h2>Monthly Breakdown</h2>
                 
                 <dl class="results-list">
-                    <div class="result-row">
+                    <div class="result-row" data-testid="monthly-gross-row">
                         <dt>Monthly Gross Salary</dt>
-                        <dd>@results.Monthly.GrossSalary.ToString("C2")</dd>
+                        <dd data-testid="monthly-gross-value">@results.Monthly.GrossSalary.ToString("C2")</dd>
                     </div>
-                    <div class="result-row deduction">
+                    <div class="result-row deduction" data-testid="monthly-paye-row">
                         <dt>PAYE Tax</dt>
-                        <dd>-@results.Monthly.PayeTax.ToString("C2")</dd>
+                        <dd data-testid="monthly-paye-value">-@results.Monthly.PayeTax.ToString("C2")</dd>
                     </div>
-                    <div class="result-row deduction">
+                    <div class="result-row deduction" data-testid="monthly-kiwisaver-row">
                         <dt>KiwiSaver (@((results.KiwiSaverRate * 100).ToString("0"))%)</dt>
-                        <dd>-@results.Monthly.KiwiSaver.ToString("C2")</dd>
+                        <dd data-testid="monthly-kiwisaver-value">-@results.Monthly.KiwiSaver.ToString("C2")</dd>
                     </div>
-                    <div class="result-row deduction">
+                    <div class="result-row deduction" data-testid="monthly-acc-row">
                         <dt>ACC Levy (1.53%)</dt>
-                        <dd>-@results.Monthly.AccLevy.ToString("C2")</dd>
+                        <dd data-testid="monthly-acc-value">-@results.Monthly.AccLevy.ToString("C2")</dd>
                     </div>
                     @if (results.HasStudentLoan)
                     {
-                        <div class="result-row deduction">
+                        <div class="result-row deduction" data-testid="monthly-student-loan-row">
                             <dt>Student Loan (12%)</dt>
-                            <dd>-@results.Monthly.StudentLoan.ToString("C2")</dd>
+                            <dd data-testid="monthly-student-loan-value">-@results.Monthly.StudentLoan.ToString("C2")</dd>
                         </div>
                     }
-                    <div class="result-row take-home">
+                    <div class="result-row take-home" data-testid="monthly-take-home-row">
                         <dt>Take-Home Pay</dt>
-                        <dd>@results.Monthly.TakeHomePay.ToString("C2")</dd>
+                        <dd data-testid="monthly-take-home-value">@results.Monthly.TakeHomePay.ToString("C2")</dd>
                     </div>
                 </dl>
 
                 <details class="annual-breakdown mt-3">
                     <summary>View Annual Breakdown</summary>
                     <dl class="results-list mt-2">
-                        <div class="result-row">
+                        <div class="result-row" data-testid="annual-gross-row">
                             <dt>Annual Gross Salary</dt>
-                            <dd>@results.Annual.GrossSalary.ToString("C2")</dd>
+                            <dd data-testid="annual-gross-value">@results.Annual.GrossSalary.ToString("C2")</dd>
                         </div>
-                        <div class="result-row deduction">
+                        <div class="result-row deduction" data-testid="annual-paye-row">
                             <dt>PAYE Tax</dt>
-                            <dd>-@results.Annual.PayeTax.ToString("C2")</dd>
+                            <dd data-testid="annual-paye-value">-@results.Annual.PayeTax.ToString("C2")</dd>
                         </div>
-                        <div class="result-row deduction">
+                        <div class="result-row deduction" data-testid="annual-kiwisaver-row">
                             <dt>KiwiSaver (@((results.KiwiSaverRate * 100).ToString("0"))%)</dt>
-                            <dd>-@results.Annual.KiwiSaver.ToString("C2")</dd>
+                            <dd data-testid="annual-kiwisaver-value">-@results.Annual.KiwiSaver.ToString("C2")</dd>
                         </div>
-                        <div class="result-row deduction">
+                        <div class="result-row deduction" data-testid="annual-acc-row">
                             <dt>ACC Levy (1.53%)</dt>
-                            <dd>-@results.Annual.AccLevy.ToString("C2")</dd>
+                            <dd data-testid="annual-acc-value">-@results.Annual.AccLevy.ToString("C2")</dd>
                         </div>
                         @if (results.HasStudentLoan)
                         {
-                            <div class="result-row deduction">
+                            <div class="result-row deduction" data-testid="annual-student-loan-row">
                                 <dt>Student Loan (12%)</dt>
-                                <dd>-@results.Annual.StudentLoan.ToString("C2")</dd>
+                                <dd data-testid="annual-student-loan-value">-@results.Annual.StudentLoan.ToString("C2")</dd>
                             </div>
                         }
-                        <div class="result-row take-home">
+                        <div class="result-row take-home" data-testid="annual-take-home-row">
                             <dt>Take-Home Pay</dt>
-                            <dd>@results.Annual.TakeHomePay.ToString("C2")</dd>
+                            <dd data-testid="annual-take-home-value">@results.Annual.TakeHomePay.ToString("C2")</dd>
                         </div>
                     </dl>
                 </details>
@@ -178,7 +182,29 @@
     private SalaryInputModel salaryInput = new();
     private PayeCalculationResponse? results;
     private bool isLoading;
+    private int activeCalculations;
     private string? errorMessage;
+    private CancellationTokenSource? salaryInputDebounceCts;
+
+    // Implements REQ-PAYE-UX-002: Auto-calculate with default values on first render
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        await Task.Delay(750);
+
+        if (results is not null || isLoading)
+        {
+            return;
+        }
+
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        await HandleCalculate(showLoadingIndicator: false, suppressErrors: true, cancellationTokenSource.Token);
+        StateHasChanged();
+    }
 
     private class SalaryInputModel
     {
@@ -192,9 +218,95 @@
         public bool HasStudentLoan { get; set; } = false;
     }
 
-    private async Task HandleCalculate()
+    // Implements REQ-PAYE-UX-001: Real-time recalculation when salary changes and results are visible
+    private async Task HandleSalaryInput(ChangeEventArgs args)
     {
-        isLoading = true;
+        var rawValue = args.Value?.ToString();
+        if (decimal.TryParse(rawValue, out var parsedSalary))
+        {
+            salaryInput.AnnualSalary = parsedSalary;
+        }
+        else
+        {
+            salaryInput.AnnualSalary = 0;
+        }
+
+        if (results is not null && !IsSalaryInputInValidRange())
+        {
+            results = null;
+            return;
+        }
+
+        if (results is null)
+        {
+            return;
+        }
+
+        salaryInputDebounceCts?.Cancel();
+        salaryInputDebounceCts = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(200, salaryInputDebounceCts.Token);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+
+        await RecalculateIfResultsVisible();
+    }
+
+    // Implements REQ-PAYE-UX-001: Real-time recalculation when KiwiSaver rate changes and results are visible
+    private async Task HandleRateChange()
+    {
+        await RecalculateIfResultsVisible();
+    }
+
+    // Implements REQ-PAYE-UX-001: Real-time recalculation when student loan option changes and results are visible
+    private async Task HandleStudentLoanChange()
+    {
+        await RecalculateIfResultsVisible();
+    }
+
+    private async Task RecalculateIfResultsVisible()
+    {
+        if (results is null || isLoading)
+        {
+            return;
+        }
+
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        await HandleCalculate(showLoadingIndicator: false, suppressErrors: true, cancellationTokenSource.Token);
+    }
+
+    private bool IsSalaryInputInValidRange()
+    {
+        return salaryInput.AnnualSalary >= 1 && salaryInput.AnnualSalary <= 1000000;
+    }
+
+    private async Task HandleFormSubmit()
+    {
+        await HandleCalculate();
+    }
+
+    private async Task HandleCalculate(
+        bool showLoadingIndicator = true,
+        bool suppressErrors = false,
+        CancellationToken cancellationToken = default)
+    {
+        if (!showLoadingIndicator && activeCalculations > 0)
+        {
+            return;
+        }
+
+        activeCalculations++;
+
+        if (showLoadingIndicator)
+        {
+            isLoading = true;
+        }
+
         errorMessage = null;
         results = null;
 
@@ -203,21 +315,42 @@
             results = await ApiClient.CalculateAsync(
                 salaryInput.AnnualSalary,
                 salaryInput.KiwiSaverRate,
-                salaryInput.HasStudentLoan);
+                salaryInput.HasStudentLoan,
+                cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            if (!suppressErrors)
+            {
+                errorMessage = "Calculation timed out. Please try again.";
+            }
         }
         catch (ApplicationException ex)
         {
-            errorMessage = ex.Message;
+            if (!suppressErrors)
+            {
+                errorMessage = ex.Message;
+            }
+
             Logger.LogWarning(ex, "Calculation failed for salary {Salary}", salaryInput.AnnualSalary);
         }
         catch (Exception ex)
         {
-            errorMessage = "An unexpected error occurred. Please try again.";
+            if (!suppressErrors)
+            {
+                errorMessage = "An unexpected error occurred. Please try again.";
+            }
+
             Logger.LogError(ex, "Unexpected error during calculation");
         }
         finally
         {
-            isLoading = false;
+            activeCalculations = Math.Max(0, activeCalculations - 1);
+
+            if (showLoadingIndicator)
+            {
+                isLoading = false;
+            }
         }
     }
 

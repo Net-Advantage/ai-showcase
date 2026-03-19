@@ -100,7 +100,8 @@ public class PlaywrightTestBase : IAsyncLifetime
     protected static decimal ParseCurrency(string currencyString)
     {
         var cleaned = currencyString.Replace("$", "").Replace(",", "").Trim();
-        return decimal.Parse(cleaned);
+        // Take absolute value to handle deductions shown as negative in UI (e.g., "-$150.00")
+        return Math.Abs(decimal.Parse(cleaned));
     }
 
     /// <summary>

@@ -15,10 +15,10 @@ public class PayeCalculationRequest
     public decimal AnnualSalary { get; set; }
 
     /// <summary>
-    /// KiwiSaver employee contribution rate (must be one of: 0.03, 0.04, 0.06, 0.08, 0.10)
+    /// KiwiSaver employee contribution rate (must be one of: 0, 0.03, 0.04, 0.06, 0.08, 0.10)
     /// </summary>
     [Required(ErrorMessage = "KiwiSaver rate is required")]
-    [AllowedKiwiSaverRate(ErrorMessage = "KiwiSaver rate must be one of: 3%, 4%, 6%, 8%, or 10%")]
+    [AllowedKiwiSaverRate(ErrorMessage = "KiwiSaver rate must be one of: 0%, 3%, 4%, 6%, 8%, or 10%")]
     public decimal KiwiSaverRate { get; set; } = 0.03m;
 
     /// <summary>
@@ -33,7 +33,7 @@ public class PayeCalculationRequest
 /// </summary>
 public class AllowedKiwiSaverRateAttribute : ValidationAttribute
 {
-    private static readonly decimal[] AllowedRates = [0.03m, 0.04m, 0.06m, 0.08m, 0.10m];
+    private static readonly decimal[] AllowedRates = [0m, 0.03m, 0.04m, 0.06m, 0.08m, 0.10m];
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {

@@ -14,7 +14,8 @@ Specifications are organized into two categories:
 
 - **[architecture.spec.md](non-functional/architecture.spec.md)** - Mandated technology stack, architectural patterns, API design standards, security requirements, infrastructure as code guidelines, testing strategy, and performance targets.
 
-- **[ux-design.spec.md](non-functional/ux-design.spec.md)** - Visual design system, component library, interaction patterns, accessibility standards, and user experience guidelines.
+- **[ux-design.spec.md](non-functional/ux-design.spec.md)** - UX design system index (design tokens, components, interaction patterns, accessibility, responsive design).
+- **[non-functional/ux/](non-functional/ux/)** - Detailed UX sub-specs (split by concern for easier navigation and targeted updates).
 
 **Characteristics:**
 - Apply to all features universally

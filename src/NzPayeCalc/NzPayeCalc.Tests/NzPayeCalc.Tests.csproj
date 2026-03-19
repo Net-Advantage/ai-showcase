@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NzPayeCalc.AppHost\NzPayeCalc.AppHost.csproj" />
+    <ProjectReference Include="..\NzPayeCalc.ApiService\NzPayeCalc.ApiService.csproj" />
   </ItemGroup>
 
   <ItemGroup>

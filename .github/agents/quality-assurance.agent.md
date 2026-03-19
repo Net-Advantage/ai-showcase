@@ -1,6 +1,8 @@
 ---
 description: "Quality Assurance agent responsible for scenario-based test design, permutation identification, and automated verification using Playwright."
 name: "Quality Assurance"
+model: GPT-5.3-Codex (copilot)
+tools: [vscode, execute, read, edit, search, todo]
 ---
 
 # Quality Assurance

@@ -25,7 +25,7 @@ If a requested feature is not defined in `/specs`, suggest creating or updating 
 **Mandatory Specifications:**
 Before any work proceeds, these must exist:
 - `/specs/non-functional/architecture.spec.md` (technology stack and patterns)
-- `/specs/non-functional/ux-design.spec.md` (design system and UX standards)
+- `/specs/non-functional/ux-design.spec.md` (UX design system index; detailed sections in `/specs/non-functional/ux/`)
 - At least one feature spec in `/specs/functional/`
 
 ---
@@ -100,7 +100,7 @@ Frontend must follow MVVM:
 - ViewModels contain UI state and logic.
 - No domain rules in UI.
 
-**Consult `/specs/non-functional/ux-design.spec.md` for:**
+**Consult `/specs/non-functional/ux-design.spec.md` (and linked sub-specs in `/specs/non-functional/ux/`) for:**
 - Visual design system (colors, typography, spacing)
 - Component library specifications
 - Interaction patterns and states

@@ -139,7 +139,7 @@ The design system is implemented as a **shared CSS file** at `/src/mvp/styles.cs
 - New component definitions must reference existing CSS class patterns (e.g. `.card`, `.btn-primary`, `.form-group`, `.breakdown`).
 - If a new token or component class is needed, define it as an **extension** of the shared file — never contradict or redefine existing tokens.
 - When producing design system output, explicitly note which tokens and classes already exist in `/src/mvp/styles.css` vs. which are new additions.
-- The shared CSS file is the **single source of truth** for implemented design tokens. The UX design spec (`/specs/non-functional/ux-design.spec.md`) documents intent; `/src/mvp/styles.css` documents implementation.
+- The shared CSS file is the **single source of truth** for implemented design tokens. The UX design spec (`/specs/non-functional/ux-design.spec.md`, plus detailed sections under `/specs/non-functional/ux/`) documents intent; `/src/mvp/styles.css` documents implementation.
 
 ---
 

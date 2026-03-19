@@ -172,6 +172,23 @@
 
 ## 3. End-to-End Tests
 
+### 3.0 PAYE Feature Update Coverage (Feb 2026)
+
+| Test ID | Scenario | Requirement ID | Status |
+|---------|----------|----------------|--------|
+| E2E_KS_001_Zero_Percent_KiwiSaver_Option_Exists | Verify 0% KiwiSaver option exists and renders $0.00 in monthly + annual results | REQ-PAYE-001 | Automated (Playwright) |
+| E2E_UX_001_Auto_Calculate_On_Page_Load | Verify initial navigation to /calculator shows results with default salary without clicking Calculate | REQ-PAYE-UX-002 | Automated (Playwright) |
+| E2E_UX_002_Recalculate_On_KiwiSaver_Change | Verify changing KiwiSaver from 3% to 6% auto-recalculates visible results | REQ-PAYE-UX-001 | Automated (Playwright) |
+| E2E_UX_003_Recalculate_On_Student_Loan_Change | Verify checking student loan auto-recalculates and shows student loan deduction row | REQ-PAYE-UX-001 | Automated (Playwright) |
+
+### 3.0.1 Feature Requirement Coverage Matrix
+
+| Requirement ID | Acceptance Criteria | SCN/Test IDs |
+|---------------|---------------------|--------------|
+| REQ-PAYE-001 | 0% KiwiSaver is selectable and contributes $0.00 in output | E2E_KS_001_Zero_Percent_KiwiSaver_Option_Exists |
+| REQ-PAYE-UX-001 | Results recalculate automatically when KiwiSaver or student-loan inputs change and results are already visible | E2E_UX_002_Recalculate_On_KiwiSaver_Change, E2E_UX_003_Recalculate_On_Student_Loan_Change |
+| REQ-PAYE-UX-002 | Results are auto-calculated on initial page load with defaults | E2E_UX_001_Auto_Calculate_On_Page_Load |
+
 ### 3.1 Complete User Journeys
 
 #### Journey 1: Basic Calculation

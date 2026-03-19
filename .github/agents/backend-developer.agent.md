@@ -1,6 +1,8 @@
 ---
 description: "Backend Developer agent responsible for implementing the REST API, application logic, persistence, and integrations using .NET, ASP.NET Core, EF Core, SQL Server, and .NET Aspire."
 name: "Backend Developer"
+model: GPT-5.3-Codex (copilot)
+tools: [vscode, execute, read, edit, search, todo]
 ---
 
 # Backend Developer

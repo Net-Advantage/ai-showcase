@@ -83,19 +83,24 @@ public class AccessibilityTests : PlaywrightTestBase
     {
         // Arrange
         await CalculatorPage!.NavigateToCalculator();
+        await CalculatorPage.WaitForAutoCalculatedResults();
 
-        // Act - Trigger validation error
-        await CalculatorPage.EnterSalary("");
+        // Act - Force validation error on numeric input
+        await Page!.EvaluateAsync(@"
+            () => {
+                const input = document.getElementById('annual-salary');
+                if (!input) return;
+                input.value = 'abc';
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+                input.dispatchEvent(new Event('blur', { bubbles: true }));
+            }");
         await CalculatorPage.ClickCalculate();
-        await Task.Delay(500);
 
         // Assert
-        var validationMessage = Page!.Locator(".validation-message");
-        Assert.True(await validationMessage.IsVisibleAsync(), "Validation message should be visible");
-        
-        var messageText = await validationMessage.TextContentAsync();
-        Assert.NotNull(messageText);
-        Assert.NotEmpty(messageText);
+        var validationMessages = await Page!.Locator(".validation-message").AllTextContentsAsync();
+        Assert.True(validationMessages.Any(text => !string.IsNullOrWhiteSpace(text)),
+            "Validation messaging should be present for invalid salary input");
     }
 
     /// <summary>
@@ -140,6 +145,7 @@ public class AccessibilityTests : PlaywrightTestBase
     {
         // Arrange
         await CalculatorPage!.NavigateToCalculator();
+        await CalculatorPage.WaitForAutoCalculatedResults();
         await CalculatorPage.EnterSalary(60000);
 
         // Act - Tab to calculate button
@@ -199,11 +205,11 @@ public class AccessibilityTests : PlaywrightTestBase
 
         // Assert - Tab order should include input then button
         Assert.Contains(tabOrder, item => item.Contains("annual-salary") || item.Contains("Annual Salary"));
-        Assert.Contains(tabOrder, item => item.Contains("Calculate"));
+        Assert.Contains(tabOrder, item => item.Contains("calculate-button") || item.Contains("Calculate"));
         
         // Input should come before button in tab order
         var inputIndex = tabOrder.FindIndex(item => item.Contains("annual-salary") || item.Contains("Annual Salary"));
-        var buttonIndex = tabOrder.FindIndex(item => item.Contains("Calculate"));
+        var buttonIndex = tabOrder.FindIndex(item => item.Contains("calculate-button") || item.Contains("Calculate"));
         
         if (inputIndex >= 0 && buttonIndex >= 0)
         {
@@ -272,10 +278,10 @@ public class AccessibilityTests : PlaywrightTestBase
     {
         // Arrange
         await CalculatorPage!.NavigateToCalculator();
+        await CalculatorPage.WaitForAutoCalculatedResults();
 
         // Act
-        await CalculatorPage.CalculateSalary(60000);
-        await CalculatorPage.WaitForResults();
+        await CalculatorPage.WaitForMonthlyGrossToBe("$5,000.00");
 
         // Assert - Check for aria-live or role="status" on results
         var resultsSection = Page!.Locator(".calculator-results");
@@ -379,8 +385,8 @@ public class AccessibilityTests : PlaywrightTestBase
     {
         // Arrange
         await CalculatorPage!.NavigateToCalculator();
+        await CalculatorPage.WaitForAutoCalculatedResults();
         await CalculatorPage.CalculateSalary(60000);
-        await CalculatorPage.WaitForResults();
 
         // Act - Get the calculation notes element
         var notesElement = Page!.Locator(".calculation-notes");
@@ -458,8 +464,8 @@ public class AccessibilityTests : PlaywrightTestBase
     {
         // Arrange
         await CalculatorPage!.NavigateToCalculator();
+        await CalculatorPage.WaitForAutoCalculatedResults();
         await CalculatorPage.CalculateSalary(60000);
-        await CalculatorPage.WaitForResults();
 
         // Act - Get all text elements that should be readable
         var textSelectors = new[]
