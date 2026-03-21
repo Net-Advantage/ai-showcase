@@ -6,7 +6,7 @@ Traditional SDLCs primarily describe **verbs**: what teams do (plan, design, bui
 
 The Artifact-Driven Agentic SDLC describes **nouns**: what the delivery system produces (User Story, UI Prototype, API Contract, Source Code, Test Suite, Runbook, Release Notes, etc.). Progress is measured by the **existence and maturity of those artifacts**, each with an explicit Definition of Done (DoD) at a given maturity gate.
 
-This is knowledge work. Humans bring judgment and creativity, but also have limited context, biases, and shifts in focus that can pull delivery away from the outcome. This system is designed to keep work anchored to the **outcome** and the **business objective**, while using agents to reduce toil.
+This is knowledge work. Humans bring judgment and creativity, but also have limited context, biases, and shifts in focus that can pull delivery away from the outcome. This system is designed to keep **outputs** anchored to the **outcome** and the **business objective**, while using agents to reduce toil.
 
 This is not “another tool.” It is a **complete delivery system**:
 
